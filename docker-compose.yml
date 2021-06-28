@@ -1,0 +1,70 @@
+version: "3.2"
+services:
+  teams-redis:
+    image: redis:5
+    ports:
+      - "6380:6379"
+
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app/backend
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    command: pipenv run python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - teams-redis
+
+
+  # frontend:
+  #   build: ./frontend
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #   depends_on:
+  #     - backend
+  #   command: yarn start
+
+  reverse-proxy: # NGINX
+    # Use the NGINX image we made ourselves by running ./scripts/build/nginx.sh
+    build: ./nginx
+
+    # No matter what, if the container stops, start it again
+    restart: always
+
+    # Expose the port 80 and 443 used by NGINX to other containers
+    expose:
+      - "80"
+      - "443"
+
+    # Expose the ports 80 and 443 used by NGINX to the host
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # Mount the volumes on the NGINX container
+    volumes:
+      # Mount 'build' as 'frontend' in the root of the container
+      - type: bind
+        source: ./frontend/build
+        target: /frontend
+        read_only: true
+
+        # Mount 'reverse_proxy_logs' as its namesake in the root of the container
+      - type: volume
+        source: reverse_proxy_logs
+        target: /reverse_proxy_logs
+        read_only: false
+
+    # The services that need to be ready before this one
+    depends_on:
+      - backend
+
+volumes:
+    reverse_proxy_logs:
