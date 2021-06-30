@@ -13,9 +13,15 @@ django-allauth = "*"
 django-rest-framework = "*"
 django-cors-headers = "*"
 channels = "*"
-pillow = "*"
+channels-redis = '*'
+Pillow = "*"
+gunicorn = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.8"
+
+[packages.twisted]
+extras = [ "http2", "tls",]
+version = "*"

@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +44,6 @@ INSTALLED_APPS = [
     'accounts',
     'call',
     'corsheaders',
-    'channels',
     #django rest framework
      'rest_framework',
      'rest_framework.authtoken',
@@ -112,13 +112,13 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'ms_teams.wsgi.application'
-ASGI_APPLICATION = 'ms_teams.asgi.application'
+ASGI_APPLICATION = 'ms_teams.routing.application'
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6380)],
+            "hosts": [("teams-redis", 6379)],
         },
     },
 }

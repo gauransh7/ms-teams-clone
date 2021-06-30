@@ -1,11 +1,11 @@
-from django.urls import re_path
+from django.conf.urls import url
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from . import call_socket
+from call import call_socket
 
 websocket_urlpatterns = [
     # url(r'^ws/chat/(?P<room_name>[^/]+)/(?P<user_id>[^/]+)$', call_socket.ChatConsumer.as_asgi()),
-    re_path(r'^ws/chat/(?P<room_name>[^/]+)$', call_socket.ChatConsumer.as_asgi()),
+    url(r'^ws/chat/(?P<room_name>[^/]+)$', call_socket.ChatConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({

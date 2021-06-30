@@ -2,8 +2,10 @@ version: "3.2"
 services:
   teams-redis:
     image: redis:5
-    ports:
-      - "6380:6379"
+    expose:
+      - "6379"
+    # ports:
+    #   - "6380:6379"
 
   backend:
     build: ./backend
@@ -11,9 +13,12 @@ services:
       - ./backend:/app/backend
     ports:
       - "8000:8000"
+      - "8001:8001"
     stdin_open: true
+    environment: 
+      - DJANGO_SETTINGS_MODULE=ms_teams.settings
     tty: true
-    command: pipenv run python manage.py runserver 0.0.0.0:8000
+    command: ["supervisord", "-c", "supervisord.conf"]
     depends_on:
       - teams-redis
 

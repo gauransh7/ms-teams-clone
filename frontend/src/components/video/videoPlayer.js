@@ -205,7 +205,7 @@ const Room = props => {
         WebSocketInstance.close()
       }
       WebSocketInstance.connect(
-        `ws://localhost:8000/ws/chat/${props.currentRoom.sharing_id}`
+        `ws://${window.location.hostname}/ws/chat/${props.currentRoom.sharing_id}`
       )
       WebSocketInstance.waitForSocketConnection(() => {
         console.log('looping')
@@ -214,7 +214,7 @@ const Room = props => {
       navigator.mediaDevices
         .getUserMedia({ video: videoConstraints, audio: true })
         .then(stream => {
-          // userVideo.current.srcObject = stream
+          userVideo.current.srcObject = stream
           // dummyUserVideo.current.srcObject = stream
           localstream.current = stream
           setMystream(stream)
@@ -416,7 +416,7 @@ const Room = props => {
             >
               {props.myuser.first_name}
             </Typography>
-            {/* <video
+            <video
               // width="100%"
               // height="120%"
               playsInline
@@ -424,34 +424,7 @@ const Room = props => {
               className={classes.video}
               muted
               ref={userVideo}
-            /> */}
-            </Paper>
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            // xs={12}
-            key={props.myuser.pk - 2}
-            className={classes.userDiv}
-          >
-          <Paper>
-            <Typography
-              variant='h5'
-              className={classes.userDetailDiv}
-              gutterBottom
-            >
-              {props.myuser.first_name}
-            </Typography>
-            {/* <video
-              // width="100%"
-              // height="120%"
-              playsInline
-              autoPlay
-              className={classes.video}
-              muted
-              ref={dummyUserVideo}
-            /> */}
+            />
             </Paper>
           </Grid>
 
@@ -473,7 +446,7 @@ const Room = props => {
                 >
                   {peer.peerName}
                 </Typography>
-                {/* <Video peer={peer.peer} /> */}
+                <Video peer={peer.peer} />
                 </Paper>
               </Grid>
             )

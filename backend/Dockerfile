@@ -13,18 +13,21 @@ RUN apt-get update \
 # Install pip packages
 RUN pip install --upgrade pip \
     && pip install --upgrade setuptools \
-    && pip install --upgrade pipenv
+    && pip install --upgrade pipenv \
+    && pip install --upgrade supervisor
 
 # Install Python dependencies
 # COPY requirements.txt /app/backend
 COPY . /app/backend
-RUN pipenv install 
+RUN pipenv install --deploy --system
+
+CMD export DJANGO_SETTINGS_MODULE=ms_teams.settings
 
 # Add the rest of the code
 
 # Make port 8000 available for the app
-EXPOSE 8000
+# EXPOSE 8000
 
 # Be sure to use 0.0.0.0 for the host within the Docker container,
 # otherwise the browser won't be able to find it
-CMD pipenv run python3 manage.py runserver 0.0.0.0:8000
+# CMD pipenv run python3 manage.py runserver 0.0.0.0:8000
