@@ -205,7 +205,7 @@ const Room = props => {
         WebSocketInstance.close()
       }
       WebSocketInstance.connect(
-        `ws://${window.location.hostname}/ws/chat/${props.currentRoom.sharing_id}`
+        `wss://${window.location.hostname}/ws/chat/${props.currentRoom.sharing_id}`
       )
       WebSocketInstance.waitForSocketConnection(() => {
         console.log('looping')
