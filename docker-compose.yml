@@ -39,13 +39,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-
-    volumes:
-      # Mount 'cert' as 'cert' in the root of the container
-    - type: bind
-      source: ./cert
-      target: /cert
-      read_only: true
+      
 
     # Mount the volumes on the NGINX container
     volumes:
@@ -53,6 +47,12 @@ services:
       - type: bind
         source: ./frontend/build
         target: /frontend
+        read_only: true
+
+      # Mount 'cert' as 'cert' in the root of the container
+      - type: bind
+        source: ./cert
+        target: /cert
         read_only: true
 
         # Mount 'reverse_proxy_logs' as its namesake in the root of the container

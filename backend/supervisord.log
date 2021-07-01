@@ -242,3 +242,8 @@
 2021-06-30 09:04:49,568 INFO spawned: 'gunicorn' with pid 8
 2021-06-30 09:04:50,724 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2021-06-30 09:04:50,724 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 08:16:26,340 WARN received SIGTERM indicating exit request
+2021-07-01 08:16:27,494 INFO waiting for daphne, gunicorn to die
+2021-07-01 08:16:30,878 INFO waiting for daphne, gunicorn to die
+2021-07-01 08:16:31,351 INFO stopped: gunicorn (exit status 0)
+2021-07-01 08:16:34,832 INFO waiting for daphne to die
