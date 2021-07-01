@@ -23,19 +23,6 @@ services:
       - teams-redis
 
 
-  # frontend:
-  #   build: ./frontend
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NODE_ENV=development
-  #   depends_on:
-  #     - backend
-  #   command: yarn start
-
   reverse-proxy: # NGINX
     # Use the NGINX image we made ourselves by running ./scripts/build/nginx.sh
     build: ./nginx
@@ -52,6 +39,13 @@ services:
     ports:
       - "80:80"
       - "443:443"
+
+    volumes:
+      # Mount 'cert' as 'cert' in the root of the container
+    - type: bind
+      source: ./cert
+      target: /cert
+      read_only: true
 
     # Mount the volumes on the NGINX container
     volumes:
