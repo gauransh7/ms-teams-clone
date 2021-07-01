@@ -29,7 +29,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # ACCESS_CONTROL_ALLOW_HEADERS = ['*']
-
+# Security options for the yourmeet
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
