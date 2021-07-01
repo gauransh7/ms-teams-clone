@@ -247,3 +247,49 @@
 2021-07-01 08:16:30,878 INFO waiting for daphne, gunicorn to die
 2021-07-01 08:16:31,351 INFO stopped: gunicorn (exit status 0)
 2021-07-01 08:16:34,832 INFO waiting for daphne to die
+2021-07-01 13:51:09,891 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-07-01 13:51:09,898 INFO supervisord started with pid 1
+2021-07-01 13:51:10,900 INFO spawned: 'daphne' with pid 8
+2021-07-01 13:51:10,902 INFO spawned: 'gunicorn' with pid 9
+2021-07-01 13:51:12,057 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 13:51:12,058 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:07:49,919 WARN received SIGTERM indicating exit request
+2021-07-01 14:07:50,379 INFO waiting for daphne, gunicorn to die
+2021-07-01 14:07:50,544 INFO stopped: gunicorn (exit status 0)
+2021-07-01 14:07:50,832 INFO stopped: daphne (exit status 0)
+2021-07-01 14:08:15,670 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-07-01 14:08:15,746 INFO supervisord started with pid 1
+2021-07-01 14:08:16,748 INFO spawned: 'daphne' with pid 7
+2021-07-01 14:08:16,749 INFO spawned: 'gunicorn' with pid 8
+2021-07-01 14:08:17,940 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:08:17,940 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:32:09,496 WARN received SIGTERM indicating exit request
+2021-07-01 14:32:09,942 INFO waiting for daphne, gunicorn to die
+2021-07-01 14:32:11,726 INFO stopped: gunicorn (exit status 0)
+2021-07-01 14:32:12,121 INFO stopped: daphne (exit status 0)
+2021-07-01 14:34:13,631 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-07-01 14:34:13,679 INFO supervisord started with pid 1
+2021-07-01 14:34:14,685 INFO spawned: 'daphne' with pid 9
+2021-07-01 14:34:14,692 INFO spawned: 'gunicorn' with pid 10
+2021-07-01 14:34:16,131 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:34:16,132 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:43:06,632 WARN received SIGTERM indicating exit request
+2021-07-01 14:43:06,632 INFO waiting for daphne, gunicorn to die
+2021-07-01 14:43:07,173 INFO stopped: gunicorn (exit status 0)
+2021-07-01 14:43:07,354 INFO stopped: daphne (exit status 0)
+2021-07-01 14:54:13,982 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-07-01 14:54:14,014 INFO supervisord started with pid 1
+2021-07-01 14:54:15,019 INFO spawned: 'daphne' with pid 7
+2021-07-01 14:54:15,025 INFO spawned: 'gunicorn' with pid 8
+2021-07-01 14:54:16,897 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:54:16,898 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:55:29,866 WARN received SIGTERM indicating exit request
+2021-07-01 14:55:29,919 INFO waiting for daphne, gunicorn to die
+2021-07-01 14:55:30,185 INFO stopped: gunicorn (exit status 0)
+2021-07-01 14:55:30,479 INFO stopped: daphne (exit status 0)
+2021-07-01 14:55:43,986 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-07-01 14:55:44,037 INFO supervisord started with pid 1
+2021-07-01 14:55:45,040 INFO spawned: 'daphne' with pid 9
+2021-07-01 14:55:45,043 INFO spawned: 'gunicorn' with pid 10
+2021-07-01 14:55:46,769 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 14:55:46,770 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

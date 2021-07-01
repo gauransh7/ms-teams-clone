@@ -205,11 +205,11 @@ const Room = props => {
         WebSocketInstance.close()
       }
       WebSocketInstance.connect(
-        `wss://${window.location.hostname}/ws/chat/${props.currentRoom.sharing_id}`
+        `${window.location.protocol == 'http:' ? 'ws' : 'wss'}://${window.location.host.includes('localhost:') ? 'localhost:8000' : window.location.hostname}/ws/chat/${props.currentRoom.sharing_id}`
       )
-      WebSocketInstance.waitForSocketConnection(() => {
-        console.log('looping')
-      })
+      // WebSocketInstance.waitForSocketConnection(() => {
+      //   console.log('looping')
+      // })
       setWebSocket(WebSocketInstance)
       navigator.mediaDevices
         .getUserMedia({ video: videoConstraints, audio: true })

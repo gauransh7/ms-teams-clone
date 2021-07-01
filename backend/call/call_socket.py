@@ -46,6 +46,8 @@ class ChatConsumer(WebsocketConsumer):
             print(self.socket_to_room)
             self.accept()
         except:
+            self.accept()
+            self.disconnect()
             return
 
     def receive(self, text_data):

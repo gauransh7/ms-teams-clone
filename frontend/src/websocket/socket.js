@@ -155,14 +155,33 @@ class WebSocketService {
     }
   }
 
-  sendSignal (action, message) {
-    var jsonStr = JSON.stringify({
-      peer: store.getState().auth.user,
-      action: action,
-      message: message
-    })
+  // sendSignal (action, message) {
+  //   var jsonStr = JSON.stringify({
+  //     peer: store.getState().auth.user,
+  //     action: action,
+  //     message: message
+  //   })
 
-    this.socketRef.send(jsonStr)
+  //   this.socketRef.send(jsonStr)
+  // }
+
+  sendSignal(action, message) {
+    try {
+      this.waitForSocketConnection(
+        function () {
+          var jsonStr = JSON.stringify({
+            peer: store.getState().auth.user,
+            action: action,
+            message: message
+          })
+      
+          this.socketRef.send(jsonStr)
+        }.bind(this),
+        1000
+      );
+    } catch (err) {
+      console.log(err.message);
+    }
   }
 
   state () {
