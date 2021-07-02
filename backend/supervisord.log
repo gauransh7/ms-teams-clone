@@ -293,3 +293,18 @@
 2021-07-01 14:55:45,043 INFO spawned: 'gunicorn' with pid 10
 2021-07-01 14:55:46,769 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2021-07-01 14:55:46,770 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-01 16:21:02,217 WARN received SIGTERM indicating exit request
+2021-07-01 16:21:02,467 INFO waiting for daphne, gunicorn to die
+2021-07-01 16:21:02,794 INFO stopped: gunicorn (exit status 0)
+2021-07-01 16:21:06,058 INFO waiting for daphne to die
+2021-07-01 16:21:07,692 INFO stopped: daphne (exit status 0)
+2021-07-02 08:20:30,650 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-07-02 08:20:30,713 INFO supervisord started with pid 1
+2021-07-02 08:20:31,719 INFO spawned: 'daphne' with pid 8
+2021-07-02 08:20:31,721 INFO spawned: 'gunicorn' with pid 9
+2021-07-02 08:20:32,723 INFO success: daphne entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-02 08:20:32,724 INFO success: gunicorn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-07-02 08:23:38,580 WARN received SIGTERM indicating exit request
+2021-07-02 08:23:38,670 INFO waiting for daphne, gunicorn to die
+2021-07-02 08:23:39,265 INFO stopped: gunicorn (exit status 0)
+2021-07-02 08:23:39,456 INFO stopped: daphne (exit status 0)

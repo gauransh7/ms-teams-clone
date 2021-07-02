@@ -17,6 +17,7 @@ import { useHistory, withRouter } from 'react-router'
 // import io from "socket.io-client";
 import Peer from 'simple-peer'
 import { updateRoomUsers } from '../../actions/chatRoomAction'
+import toast, { Toaster } from 'react-hot-toast'
 // import styled from "styled-components";
 import WebSocketInstance from '../../websocket/socket'
 import VideocamIcon from '@material-ui/icons/Videocam'
@@ -27,14 +28,16 @@ import CallEndIcon from '@material-ui/icons/CallEnd'
 import ChatIcon from '@material-ui/icons/Chat'
 import SendIcon from '@material-ui/icons/Send'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import ScreenShareIcon from '@material-ui/icons/ScreenShare';
 
 const useStyles = makeStyles(theme => ({
   video: {
-    width: '100%',
-    height: '100%',
+    // width: '100%',
+    // height: '100%',
+    // height: window.screen.availHeight/1.2,
+    // width: window.screen.availWidth/1.2,
     backgroundSize: 'cover',
     objectFit: 'fill',
-    zIndex: -1,
     overflow: 'hidden'
   },
   gridContainer: {
@@ -131,6 +134,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Video = props => {
+  console.log(props)
   const ref = useRef()
   const classes = useStyles()
 
@@ -141,13 +145,30 @@ const Video = props => {
   }, [])
 
   return (
-    <video playsInline autoPlay className={classes.video} muted ref={ref} />
+    <video
+      playsInline
+      width={
+        props.numpeers == 0 || window.screen.availWidth < 1400
+          ? window.screen.availWidth / 1.3
+          : window.screen.availWidth / 2.2
+      }
+      height={
+        props.numpeers == 0
+          ? window.screen.availHeight / 1.3
+          : window.screen.availWidth < 1400
+          ? window.screen.availHeight / 2.3
+          : window.screen.availHeight / 1.3
+      }
+      autoPlay
+      className={classes.video}
+      ref={ref}
+    />
   )
 }
 
 const videoConstraints = {
-  // height: window.innerHeight / 1.5,
-  // width: window.innerWidth / 2
+  height: window.screen.availHeight,
+  width: window.screen.availWidth
 }
 
 const Room = props => {
@@ -165,7 +186,7 @@ const Room = props => {
   const [mystream, setMystream] = useState()
   const [video, setVideo] = useState(true)
   const [chatBoxOpen, setChatBoxOpen] = useState(false)
-  const [audio, setAudio] = useState(false)
+  const [audio, setAudio] = useState(true)
   const [roomExist, setRoomExists] = useState(false)
   const peersRef = useRef([])
   const roomID = ''
@@ -205,14 +226,18 @@ const Room = props => {
         WebSocketInstance.close()
       }
       WebSocketInstance.connect(
-        `${window.location.protocol == 'http:' ? 'ws' : 'wss'}://${window.location.host.includes('localhost:') ? 'localhost:8000' : window.location.hostname}/ws/chat/${props.currentRoom.sharing_id}`
+        `${window.location.protocol == 'http:' ? 'ws' : 'wss'}://${
+          window.location.host.includes('localhost:')
+            ? 'localhost:8000'
+            : window.location.hostname
+        }/ws/chat/${props.currentRoom.sharing_id}`
       )
       // WebSocketInstance.waitForSocketConnection(() => {
       //   console.log('looping')
       // })
       setWebSocket(WebSocketInstance)
       navigator.mediaDevices
-        .getUserMedia({ video: videoConstraints, audio: true })
+        .getUserMedia({ video: { videoConstraints }, audio: true })
         .then(stream => {
           userVideo.current.srcObject = stream
           // dummyUserVideo.current.srcObject = stream
@@ -245,16 +270,17 @@ const Room = props => {
           })
 
           WebSocketInstance.on('user joined', payload => {
-            console.log('user joined')
             console.log(peers)
             console.log(payload.userID)
             if (payload.userID === props.myuser.pk) {
+              toast(`${payload.caller[1]} joined the room.`, { icon: '👏' })
               const peer = addPeer(payload.signal, payload.caller, stream)
               if (
                 !Boolean(
                   peersRef.current.some(e => e.peerID == payload.caller[0])
                 )
               ) {
+                console.log(`${payload.caller[1]} joined the room.`)
                 peersRef.current.push({
                   peerID: payload.caller[0],
                   peerName: payload.caller[1],
@@ -283,9 +309,10 @@ const Room = props => {
           })
 
           WebSocketInstance.on('user left', id => {
-            console.log('user left')
             const peerObj = peersRef.current.find(p => p.peerID === id)
             if (peerObj) {
+              toast(`${peerObj.peerName} left.`, { icon: 'ℹ️' })
+
               peerObj.peer.destroy()
             }
             const peers = peersRef.current.filter(p => p.peerID !== id)
@@ -299,8 +326,15 @@ const Room = props => {
               msg: payload.message
             }
             setAllMessages(messages => [...messages, msgObj])
+            if (props.myuser.first_name != msgObj.user && !chatBoxOpen) {
+              toast(`${payload.user} : ${payload.message}`, { icon: '💬' })
+            }
             console.log(allMessages)
           })
+        })
+        .catch(err => {
+          console.log(err)
+          toast.error('Cannot get access to your camera and video !')
         })
     }
   }, [roomExist])
@@ -341,16 +375,12 @@ const Room = props => {
 
   function shareScreen () {
     console.log(mystream)
-    console.log(peersRef.current)
+    console.log(peersRef.current[0].peer)
     navigator.mediaDevices
       .getDisplayMedia({ cursor: true })
       .then(screenStream => {
         console.log(screenStream.getVideoTracks())
-        peersRef.current[0].peer.replaceTrack(
-          peersRef.current[0].peer['streams'][0].getVideoTracks()[0],
-          screenStream.getVideoTracks()[0],
-          peersRef.current[0].peer['streams'][0]
-        )
+        // peersRef.current[0].peer.getSenders()[1].replaceTrack(screenStream.getTracks()[0])
         userVideo.current.srcObject = screenStream
         // screenStream.getTracks()[0].onended = () =>{
         // peers[0].peer.replaceTrack(screenStream.getVideoTracks()[0],mystream.getVideoTracks()[0],mystream)
@@ -393,6 +423,7 @@ const Room = props => {
 
   return roomExist ? (
     <div className={classes.chatRoom}>
+      <Toaster />
       <div className={classes.chatRoomMainDiv}>
         <Grid
           // xs={chatBoxOpen ? 6 : 12}
@@ -408,7 +439,7 @@ const Room = props => {
             key={props.myuser.pk}
             className={classes.userDiv}
           >
-          <Paper>
+            {/* <Paper> */}
             <Typography
               variant='h5'
               className={classes.userDetailDiv}
@@ -417,28 +448,73 @@ const Room = props => {
               {props.myuser.first_name}
             </Typography>
             <video
-              // width="100%"
-              // height="120%"
+              width={
+                peers.length == 0 || window.screen.availWidth < 1400
+                  ? window.screen.availWidth / 1.3
+                  : window.screen.availWidth / 2.2
+              }
+              height={
+                peers.length == 0
+                  ? window.screen.availHeight / 1.3
+                  : window.screen.availWidth < 1400
+                  ? window.screen.availHeight / 2.3
+                  : window.screen.availHeight / 1.3
+              }
               playsInline
+              muted
               autoPlay
               className={classes.video}
-              muted
               ref={userVideo}
             />
-            </Paper>
+            {/* </Paper> */}
           </Grid>
+          {/* <Grid
+            // container
+            item
+            xs={12}
+            // xs={12}
+            key={-2}
+            className={classes.userDiv}
+          >
+            <Paper>
+            <Typography
+              variant='h5'
+              className={classes.userDetailDiv}
+              gutterBottom
+            >
+              {props.myuser.first_name}
+            </Typography>
+            <video
+              width={
+                peers.length == 0
+                  ? window.screen.availWidth
+                  : window.screen.availWidth / 2
+              }
+              height={
+                peers.length == 0
+                  ? window.screen.availHeight
+                  : window.screen.availHeight / 2
+              }
+              playsInline
+              muted
+              autoPlay
+              className={classes.video}
+              ref={dummyUserVideo}
+            />
+            </Paper>
+          </Grid> */}
 
           {peers.map(peer => {
             return (
               <Grid
-                container
+                // container
                 xs={12}
                 // xs={12}
                 item
                 key={peer.peerID}
                 className={classes.userDiv}
               >
-              <Paper>
+                {/* <Paper> */}
                 <Typography
                   variant='h5'
                   className={classes.userDetailDiv}
@@ -446,14 +522,14 @@ const Room = props => {
                 >
                   {peer.peerName}
                 </Typography>
-                <Video peer={peer.peer} />
-                </Paper>
+                <Video peer={peer.peer} numpeers={peers.length} />
+                {/* </Paper> */}
               </Grid>
             )
           })}
         </Grid>
         {chatBoxOpen ? (
-          <Grid xs={6} className={classes.chatBox}>
+          <Grid className={classes.chatBox}>
             <Grid className={classes.chatBoxIntro}>
               <IconButton>
                 <ArrowBackIcon onClick={toggleChatBoxOpen} />
@@ -515,7 +591,7 @@ const Room = props => {
           <CallEndIcon />
         </Button>
         <Button onClick={shareScreen}>
-          <ChatIcon />
+          <ScreenShareIcon />
         </Button>
       </Grid>
     </div>
