@@ -8,7 +8,7 @@ const themes = {
     solarizedLight: {
       type: "light",
       primary: { main: "#fff7dd", contrastText: "#002b36" },
-      secondary: { main: "#002b36", contrastText: "#eee8d5" },
+      secondary: { main: "#708090", contrastText: "#eee8d5" },
       background: { default: "#eee8d5", paper: "#fff7dd" },
     },
     palpatine: {

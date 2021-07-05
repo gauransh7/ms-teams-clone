@@ -1,6 +1,6 @@
 import React, { Component, useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Link, useHistory, withRouter } from 'react-router-dom'
+import { useHistory, withRouter } from 'react-router-dom'
 import {
   Button,
   Grid,
@@ -12,17 +12,33 @@ import {
 import { createChatRoom, getAllRooms } from '../../actions/chatRoomAction'
 import ChatRoomCard from '../common/chatRoomCard'
 import { makeStyles } from '@material-ui/styles'
-import RoomsList from '../rooms/roomsList'
 
 const useStyles = makeStyles(theme => ({
-  roomDetailsDiv: {
+  roomsList: {
+    width: '100%',
+    display: 'grid',
+    justifyItems: 'center',
+    overflow: 'hidden',
+    paddingBottom: theme.spacing(1)
+  },
+  list: {
+    overflowY: 'scroll',
+    maxHeight: window.screen.availHeight / 2,
     width: '100%',
     display: 'grid',
     justifyItems: 'center'
+  },
+  webkitScrollbar: {
+    width: 0 /* Remove scrollbar space */,
+    background: 'transparent' /* Optional: just make scrollbar invisible */
+  },
+  /* Optional: show position indicator in red */
+  webkitScrollbarThumb: {
+    background: '#FF0000'
   }
 }))
 
-const RoomDetails = props => {
+const RoomsList = props => {
   const history = useHistory()
   useEffect(() => {
     props.getAllRooms()
@@ -30,12 +46,13 @@ const RoomDetails = props => {
   const classes = useStyles()
 
   return (
-    <div className={classes.roomDetailsDiv}>
-      <RoomsList heading="Your rooms" rooms={props.roomsCreated.slice(0,2)} />
-      <RoomsList heading="Your Invites" rooms={props.roomsInvited.slice(0,2)} />
-      <Typography variant='h6' className={classes.title}>
-          <Button onClick={() => history.push('/rooms')}>View All</Button>
-        </Typography>
+    <div className={classes.roomsList}>
+      <StepLabel>{props.heading}</StepLabel>
+      <div className={classes.list}>
+        {props.rooms.map(room => (
+          <ChatRoomCard room={room} invite={props.heading=="Your Invites"} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -60,5 +77,5 @@ const mapDispatchToprops = dispatch => {
 }
 
 export default withRouter(
-  connect(mapStateToprops, mapDispatchToprops)(RoomDetails)
+  connect(mapStateToprops, mapDispatchToprops)(RoomsList)
 )

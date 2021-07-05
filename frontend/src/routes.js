@@ -4,6 +4,8 @@ import DefaultLayout from './hocs/DefaultLayout';
 import Login from './views/login';
 
 const Home = React.lazy(() => import('./views/home'));
+const Rooms = React.lazy(() => import('./views/rooms'));
+const Room = React.lazy(() => import('./views/room'));
 const VideoView = React.lazy(() => import('./views/video'));
 
 export const protectedRoutes = [
@@ -18,6 +20,18 @@ export const protectedRoutes = [
     exact: true,
     layout: DefaultLayout,
     component: () => <VideoView />,
+  },
+  {
+    path: '/rooms',
+    exact: true,
+    layout: DefaultLayout,
+    component: () => <Rooms />,
+  },
+  {
+    path: '/room/:id',
+    exact: true,
+    layout: DefaultLayout,
+    component: () => <Room />,
   },
 ];
 

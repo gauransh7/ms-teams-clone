@@ -5,7 +5,7 @@ from accounts.models import User
 class ChatRoom(models.Model):
     created_by = models.ForeignKey(
         User,
-        related_name='needy_person',
+        related_name='room_creater',
         on_delete=models.CASCADE
     )
 
@@ -37,6 +37,31 @@ class ChatRoom(models.Model):
         id = self.id
         created_by_person = self.created_by
         return f"ChatRoom {id} created by {created_by_person}"
+
+    class Meta:
+        ordering = ['-created_on']
+
+class Message(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='message_user',
+        on_delete=models.CASCADE
+    )
+
+    room = models.ForeignKey(
+        ChatRoom,
+        related_name='message_user',
+        on_delete=models.CASCADE
+    )
+
+    message = models.TextField()
+
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        id = self.id
+        message_user = self.user
+        return f"Message {id} created by {message_user}"
 
     class Meta:
         ordering = ['-created_on']

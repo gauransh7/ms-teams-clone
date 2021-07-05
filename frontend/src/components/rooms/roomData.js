@@ -3,39 +3,39 @@ import { connect } from 'react-redux'
 import { Link, useHistory, withRouter } from 'react-router-dom'
 import {
   Button,
+    Card,
+    CardContent,
   Grid,
   Paper,
   StepLabel,
   TextField,
   Typography
 } from '@material-ui/core'
-import { createChatRoom, getAllRooms } from '../../actions/chatRoomAction'
-import ChatRoomCard from '../common/chatRoomCard'
+import { createChatRoom, getAllRooms, getRoomDetails } from '../../actions/chatRoomAction'
 import { makeStyles } from '@material-ui/styles'
-import RoomsList from '../rooms/roomsList'
 
 const useStyles = makeStyles(theme => ({
-  roomDetailsDiv: {
+  roomDataDiv: {
     width: '100%',
     display: 'grid',
     justifyItems: 'center'
   }
 }))
 
-const RoomDetails = props => {
+const RoomData = props => {
   const history = useHistory()
   useEffect(() => {
-    props.getAllRooms()
+    props.getRoomDetails()
   }, [])
   const classes = useStyles()
 
   return (
-    <div className={classes.roomDetailsDiv}>
-      <RoomsList heading="Your rooms" rooms={props.roomsCreated.slice(0,2)} />
-      <RoomsList heading="Your Invites" rooms={props.roomsInvited.slice(0,2)} />
-      <Typography variant='h6' className={classes.title}>
-          <Button onClick={() => history.push('/rooms')}>View All</Button>
-        </Typography>
+    <div className={classes.roomDataDiv}>
+      <Card>
+        <CardContent>
+            {props.currentRoom.room_name} Data
+        </CardContent>
+      </Card>
     </div>
   )
 }
@@ -43,8 +43,7 @@ const RoomDetails = props => {
 const mapStateToprops = state => {
   return {
     user: state.auth.user,
-    roomsCreated: state.room.roomsCreated,
-    roomsInvited: state.room.roomsInvited
+    currentRoom: state.room.currentRoom
   }
 }
 
@@ -53,12 +52,12 @@ const mapDispatchToprops = dispatch => {
     createChatRoom: (data, handleSuccess) => {
       return dispatch(createChatRoom(data, handleSuccess))
     },
-    getAllRooms: () => {
-      return dispatch(getAllRooms())
+    getRoomDetails: () => {
+      return dispatch(getRoomDetails())
     }
   }
 }
 
 export default withRouter(
-  connect(mapStateToprops, mapDispatchToprops)(RoomDetails)
+  connect(mapStateToprops, mapDispatchToprops)(RoomData)
 )

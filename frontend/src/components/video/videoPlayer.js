@@ -34,8 +34,7 @@ import VideoOffDiv from './videoOffDiv'
 const useStyles = makeStyles(theme => ({
   video: {
     // width: '100%',
-    // height: '100%',
-    // height: window.screen.availHeight/1.2,
+    // height: '100%',SvgIcon
     // width: window.screen.availWidth/1.2,
     backgroundSize: 'cover',
     objectFit: 'fill',
@@ -211,14 +210,16 @@ const Room = React.memo(props => {
   }, [peers])
 
   useEffect(() => {
-    let data = {
-      id: props.match.params.id,
-      sharing_id: props.match.params.code
-    }
-    data = JSON.stringify(data)
-    props.getRoomDetails(data, props.match.params.id, () => {
-      console.log(currentRoom && currentRoom.created_by == props.myuser.pk)
-      if (currentRoom && currentRoom.created_by == props.myuser.pk) {
+    // let data = {
+    //   id: props.match.params.id,
+    //   sharing_id: props.match.params.code
+    // }
+    // data = JSON.stringify(data)
+    console.log("currentroom.id changes")
+    console.log(currentRoom)
+    props.getRoomDetails(props.match.params.id, () => {
+      console.log(currentRoom && currentRoom.created_by.pk == props.myuser.pk)
+      if (currentRoom && currentRoom.created_by.pk == props.myuser.pk) {
         navigator.mediaDevices
           .getUserMedia({ video: { videoConstraints }, audio: true })
           .then(stream => {
@@ -274,14 +275,14 @@ const Room = React.memo(props => {
           let presentInUsers =
             props.currentRoom.all_users.indexOf(user.id) != -1
           console.log(props.currentRoom.all_users)
-          console.log(user.id == props.currentRoom.created_by)
-          console.log(user.id == props.currentRoom.created_by || presentInUsers)
-          if (user.id == props.currentRoom.created_by || presentInUsers) {
+          console.log(user.id == props.currentRoom.created_by.pk)
+          console.log(user.id == props.currentRoom.created_by.pk || presentInUsers)
+          if (user.id == props.currentRoom.created_by.pk || presentInUsers) {
             WebSocketInstance.sendSignal('accept invite', user.id)
           }
           else if (
-            props.currentRoom.created_by == props.myuser.pk &&
-            currentRoom.created_by != user.id 
+            props.currentRoom.created_by.pk == props.myuser.pk &&
+            currentRoom.created_by.pk != user.id 
           ) {
             toast(
               t => (
@@ -784,8 +785,8 @@ const mapStateToprops = state => {
 
 const mapDispatchToprops = dispatch => {
   return {
-    getRoomDetails: (data, id, handleSuccess) => {
-      return dispatch(getRoomDetails(data, id, handleSuccess))
+    getRoomDetails: (id, handleSuccess) => {
+      return dispatch(getRoomDetails(id, handleSuccess))
     }
   }
 }

@@ -1,14 +1,16 @@
 import { Button, Card, Grid, Link, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import React, { Component, useEffect } from 'react'
+import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Redirect, useHistory } from 'react-router'
 import { logoutUser } from '../actions/authAction'
-import CreateRoom from '../components/homeComponents/createRoom'
-import RoomDetails from '../components/homeComponents/roomDetails'
+import { getRoomDetails } from '../actions/chatRoomAction'
+import RoomChat from '../components/rooms/roomChat'
+import RoomData from '../components/rooms/roomData'
 
 const useStyles = makeStyles(theme => ({
-  Home: {
+  Room: {
     display: 'grid',
     gridAutoFlow: 'column',
     justifyItems: 'center',
@@ -20,17 +22,17 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Home = props => {
+const Room = props => {
   useEffect(() => {
     console.log('render')
+    console.log(props)
+    props.getRoomDetails(props.match.params.id)
   }, [])
   const classes = useStyles()
-  return (
-    <Grid className={classes.Home}>
-      <CreateRoom />
-      <RoomDetails />
-    </Grid>
-  )
+  return <Grid className={classes.Room}>
+      <RoomChat />
+      <RoomData />
+  </Grid>
 }
 
 const mapStateToProps = state => {
@@ -43,7 +45,10 @@ const mapDispatchToProps = dispatch => {
   return {
     logoutUser: () => {
       return dispatch(logoutUser())
+    },
+    getRoomDetails: (id, callback) => {
+      return dispatch(getRoomDetails(id, callback))
     }
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Room))

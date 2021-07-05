@@ -1,6 +1,6 @@
 import axios from 'axios';
 import apiClient from '../helpers/apiClient';
-import { chat_room, update_room_users } from '../urls/chatRoom';
+import { chat_room, myrooms, update_room_users, my_rooms } from '../urls/chatRoom';
 
 import {
     CREATE_CHAT_ROOM,
@@ -15,6 +15,7 @@ import {
     DELETE_CHAT_ROOM_PENDING,
     GET_CURRENT_CHAT_ROOM_PENDING,
     CHATROOM_API_ERROR,
+    UPDATE_ROOMS_CREATED
 } from './chatRoomActionTypes'
 
 const apiDispatch = (actionType = '', data) => {
@@ -42,6 +43,7 @@ export const createChatRoom = (data, callback = () => {}) => {
             .then(res => {
                 console.log(res)
                 dispatch(apiDispatch(SET_CURRENT_ROOM, res.data));
+                dispatch(apiDispatch(UPDATE_ROOMS_CREATED, res.data));
                 dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, false));
                 dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, false));
                 callback(res.data.id, res.data.sharing_id);
@@ -56,7 +58,7 @@ export const createChatRoom = (data, callback = () => {}) => {
 
 export const updateRoomUsers = (data, id, callback = () => {}) => {
     let url = chat_room + id + "/update_room_users/";
-        
+    console.log(data)
     return dispatch => {
         dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, true));
         dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, true));
@@ -77,9 +79,9 @@ export const updateRoomUsers = (data, id, callback = () => {}) => {
     }
 }
 
-export const getRoomDetails = (data, id, callback = () => {}) => {
+export const getRoomDetails = (id, callback = () => {}) => {
     let url = chat_room + id;
-        
+    console.log("fetch room details")
     return dispatch => {
         dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, true));
         dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, true));
@@ -101,7 +103,7 @@ export const getRoomDetails = (data, id, callback = () => {}) => {
 }
 
 export const getAllRooms = () => {
-    let url = chat_room;
+    let url = my_rooms;
         
     return dispatch => {
         dispatch(apiDispatch(GET_ALL_ROOMS_PENDING, true));

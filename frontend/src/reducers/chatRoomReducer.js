@@ -10,7 +10,8 @@ import {
   DELETE_CHAT_ROOM_PENDING,
   GET_CURRENT_CHAT_ROOM_PENDING,
   CHATROOM_API_ERROR,
-  GET_ALL_ROOMS_PENDING
+  GET_ALL_ROOMS_PENDING,
+  UPDATE_ROOMS_CREATED
 } from '../actions/chatRoomActionTypes'
 
 const initialPendingState = {
@@ -21,7 +22,8 @@ const initialPendingState = {
 const initialState = {
   ...initialPendingState,
   currentRoom: {},
-  rooms: [],
+  roomsCreated: [],
+  roomsInvited: [],
   error: null
 }
 
@@ -31,9 +33,11 @@ export default function chatRoomReducer (
 ) {
   switch (type) {
     case SET_CURRENT_ROOM:
-      return { ...state, currentRoom: payload, rooms:[payload, ...state.rooms] }
+      return { ...state, currentRoom: payload }
+    case UPDATE_ROOMS_CREATED:
+      return {...state, roomsCreated: [payload,...state.roomsCreated]}
     case SET_ALL_ROOMS:
-      return { ...state, rooms: [...payload] }
+      return { ...state, roomsCreated: [...payload.created], roomsInvited: [...payload.invited] }
     case CREATE_CHAT_ROOM_PENDING:
       return { ...state, createChatRoomPending: payload }
     case GET_ALL_ROOMS_PENDING:
