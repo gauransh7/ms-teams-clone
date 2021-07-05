@@ -77,6 +77,29 @@ export const updateRoomUsers = (data, id, callback = () => {}) => {
     }
 }
 
+export const getRoomDetails = (data, id, callback = () => {}) => {
+    let url = chat_room + id;
+        
+    return dispatch => {
+        dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, true));
+        dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, true));
+        apiClient
+            .get(url)
+            .then(res => {
+                console.log(res)
+                dispatch(apiDispatch(SET_CURRENT_ROOM, res.data));
+                dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, false));
+                dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, false));
+                callback();
+            })
+            .catch(error => {
+                dispatch(apiError(error));
+                dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, false));
+                dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, false));
+            })
+    }
+}
+
 export const getAllRooms = () => {
     let url = chat_room;
         

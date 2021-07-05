@@ -1,6 +1,6 @@
 import { Button, Card, Grid, Link, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import React, { Component } from 'react'
+import React, { Component, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Redirect, useHistory } from 'react-router'
 import { logoutUser } from '../actions/authAction'
@@ -20,6 +20,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Home = props => {
+  useEffect(() => {
+    console.log("render")
+  },[])
   const classes = useStyles();
   return (
     <Grid className={classes.Home}>

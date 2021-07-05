@@ -13,11 +13,11 @@ class ChatRoomViewSet(viewsets.ModelViewSet):
     # permission_classes = [ReadOnly]
     queryset = ChatRoom.objects.all()
     serializer_class = ChatRoomSerializer
-    def get_queryset(self):
-        print(self.request)
-        queryset = self.queryset
-        query_set = queryset.filter(Q(created_by=self.request.user))
-        return query_set
+    # def get_queryset(self):
+    #     print(self.request)
+    #     queryset = self.queryset
+    #     query_set = queryset.filter(Q(created_by=self.request.user))
+    #     return query_set
 
     @action(detail=True, methods=['PATCH'], url_name='update_room_users',
             url_path='update_room_users')

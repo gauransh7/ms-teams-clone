@@ -74,7 +74,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-SITE_ID = 4
+SITE_ID = 3
 
 ROOT_URLCONF = 'ms_teams.urls'
 

@@ -27,10 +27,10 @@ class ChatConsumer(WebsocketConsumer):
             print("before users")
             print(self.socket_to_room.get(room.id))
             if room.id in self.socket_to_room:
-                if self.scope['user'] not in self.socket_to_room.get(room.id):
-                    self.socket_to_room.get(room.id).append(self.scope['user'])
+                if not any(x['user'] ==self.scope['user'] for x in self.socket_to_room.get(room.id)):
+                    self.socket_to_room.get(room.id).append({"user" : self.scope['user'], "video": True, "audio": True})
             else:
-                self.socket_to_room[room.id] = [self.scope['user']]
+                self.socket_to_room[room.id] = [{"user" : self.scope['user'], "video": True, "audio": True}]
             print("connect")
             print(room.id)
             print(self.scope['user'].id)
@@ -62,13 +62,34 @@ class ChatConsumer(WebsocketConsumer):
         command = content.get("action", None)
         try:
             if command == "join room":
+                thisUser = self.scope["user"]
+                media = content["message"]
+                for x in self.socket_to_room.get(self.room.id):
+                    if x['user'] == self.scope["user"]:
+                        x['video'] = media["video"]
+                        x['audio'] = media["audio"]
+                        break
+                self.createSDP("request invite", {"email" : thisUser.email, "id" : thisUser.id, "name": thisUser.first_name})
+            elif command == "reject invite":
+                print(content["message"])
+                user_rejected_id = content["message"]
+                user_rejected = User.objects.get(id=user_rejected_id)
+                if user_rejected in self.socket_to_room.get(self.room.id):
+                    self.socket_to_room.get(self.room.id).remove(user_rejected)
+                if user_rejected in self.room.all_users.all():
+                    self.room.all_users.remove(user_rejected)
+                self.createSDP("invite was rejected", { "id" : user_rejected_id})
+            elif command == "accept invite":
                 print("joining room")
+                thisUser = User.objects.get(id=content["message"])
+                if thisUser not in self.room.all_users.all():
+                    self.room.all_users.add(thisUser)
                 # Make them join the room
                 # user = self.scope['user']
-                all_user = [[x.id, x.first_name] for x in self.socket_to_room.get(self.room.id)]
+                all_user = [[x['user'].id, x['user'].first_name, x['video'], x['audio']] for x in self.socket_to_room.get(self.room.id)]
                 # val = [x.get("id") for x in all_user_ids]
                 # print(val)
-                self.createSDP("all users", all_user)
+                self.createSDP("all users", { "users": all_user, "id": content["message"]})
                 # if users[roomId]
                 # await self.join_room(content["room"])
             elif command == "sending signal":
@@ -77,9 +98,12 @@ class ChatConsumer(WebsocketConsumer):
                 # print(thisUser.id)
                 print(content["message"]["callerID"])
                 callerObj = User.objects.get(id = content["message"]["callerID"])
-                caller = [callerObj.id, callerObj.first_name]
-                print(caller)
-                self.createSDP("user joined", { "signal": content["message"]["signal"], "caller": caller, "userID": content["message"]["userToSignal"]})
+                for x in self.socket_to_room.get(self.room.id):
+                    if x['user'] == callerObj:
+                        caller = [x['user'].id, x['user'].first_name, x['video'], x['audio']]
+                        print(caller)
+                        self.createSDP("user joined", { "signal": content["message"]["signal"], "caller": caller, "userID": content["message"]["userToSignal"]})
+            
             elif command == "returning signal":
                 print("return signal backend")
                 thisUser = self.scope["user"]
@@ -91,6 +115,23 @@ class ChatConsumer(WebsocketConsumer):
                 print(content["message"])
                 thisUser = self.scope["user"]
                 self.createSDP("message received", { "user": thisUser.first_name, "message": content["message"]})
+            
+            elif command == "toggle video":
+                thisUser = self.scope["user"]
+                for x in self.socket_to_room.get(self.room.id):
+                    if x['user'] == thisUser:
+                        print(x['video'])
+                        x['video'] = not x['video']
+                        print(x['video'])
+                        self.createSDP("toggle video", {"id" : thisUser.id, "value": x['video']})
+
+            elif command == "toggle audio":
+                thisUser = self.scope["user"]
+                for x in self.socket_to_room.get(self.room.id):
+                    if x['user'] == thisUser:
+                        x['audio'] = not x['audio']
+                        self.createSDP("toggle audio", {"id" : thisUser.id, "value": x['audio']})
+
         except ClientError as e:
             # Catch any errors and send it back
             self.send_json({"error": e.code})
@@ -121,8 +162,10 @@ class ChatConsumer(WebsocketConsumer):
         # Called when the socket closes
         thisUser = self.scope['user']
         print(thisUser.id)
-        if thisUser in self.socket_to_room.get(self.room.id):
-                self.socket_to_room.get(self.room.id).remove(thisUser)
+        for x in self.socket_to_room.get(self.room.id):
+            if x['user'] == thisUser:
+                self.socket_to_room.get(self.room.id).remove(x)
+                
 
         self.createSDP("user left", thisUser.id)
 

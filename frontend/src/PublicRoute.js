@@ -13,7 +13,10 @@ const PublicRoute = ({
   ...rest
 }) => {
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-
+  var next = '';
+  if(rest.location.search.includes('next')){
+    next = rest.location.search.slice(6);
+  }
   return (
     <Route
       path={rest.path}
@@ -32,7 +35,8 @@ const PublicRoute = ({
             </Suspense>
           </Layout>
         ) : (
-          <Redirect to="/" />
+          
+          <Redirect to={`/${next}`}  />
         );
       }}
     />

@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { useHistory, withRouter } from 'react-router-dom'
 import { Button, Grid, Paper, StepLabel, TextField } from '@material-ui/core'
@@ -25,6 +25,10 @@ const CreateRoom = props => {
   const [saveForLater, setSaveForLater] = useState(false)
   const [roomName, setRoomName] = useState('')
   const [roomNameError, setRoomNameError] = useState('')
+
+  useEffect(() => {
+    console.log("render")
+  },[])
 
   const handleRoomNameChange = e => {
     setRoomName(e.target.value)
