@@ -8,7 +8,13 @@ import {
   InputAdornment,
   SvgIcon,
   StepLabel,
-  IconButton
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Avatar,
+  Divider
 } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
@@ -16,8 +22,14 @@ import { useSelector } from 'react-redux'
 import { useHistory, withRouter } from 'react-router'
 // import io from "socket.io-client";
 import Peer from 'simple-peer'
-import { getRoomDetails } from '../../actions/chatRoomAction'
+import {
+  addMessage,
+  getAllMessages,
+  getRoomDetails,
+  setUserDimension
+} from '../../actions/chatRoomAction'
 import toast, { Toaster } from 'react-hot-toast'
+import TimeAgo from 'react-timeago'
 // import styled from "styled-components";
 import WebSocketInstance from '../../websocket/socket'
 import VideocamIcon from '@material-ui/icons/Videocam'
@@ -30,6 +42,13 @@ import SendIcon from '@material-ui/icons/Send'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 import ScreenShareIcon from '@material-ui/icons/ScreenShare'
 import VideoOffDiv from './videoOffDiv'
+import RoomChat from '../rooms/roomChat'
+import UserCard from './userCard'
+import ChatBox from '../common/chatBox'
+import GridOnIcon from '@material-ui/icons/GridOn'
+import GridOffIcon from '@material-ui/icons/GridOff'
+import RoomData from '../rooms/roomData'
+import GroupIcon from '@material-ui/icons/Group';
 
 const useStyles = makeStyles(theme => ({
   video: {
@@ -46,21 +65,24 @@ const useStyles = makeStyles(theme => ({
       flexDirection: 'column'
     }
   },
+  introLobby: {
+    display: 'grid',
+    gridAutoFlow: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   paper: {
-    // padding: '2px',
-    // border: '2px solid black',
-    // margin: '2px',
-    // gridTemplateColumns: '1fr 1fr',
     display: 'grid',
     justifyContent: 'space-around',
-    gridAutoFlow: 'column',
+    alignItems: 'center',
+    // gridAutoFlow: 'column',
     overflow: 'hidden',
     height: '100%',
     width: '100%',
-    boxShadow: 'none',
-    [theme.breakpoints.down('sm')]: {
-      gridAutoFlow: 'row'
-    }
+    boxShadow: 'none'
+    // [theme.breakpoints.down('sm')]: {
+    //   gridAutoFlow: 'row'
+    // }
   },
   userDetailDiv: {
     position: 'absolute'
@@ -85,8 +107,8 @@ const useStyles = makeStyles(theme => ({
   chatBox: {
     position: 'relative',
     backgroundColor: theme.palette.secondary.main,
-    zIndex: 2,
-    width: 'auto',
+    zIndex: 5,
+    // width: 'auto',
     minWidth: '30vh',
     maxHeight: '100%',
     [theme.breakpoints.down('xs')]: {
@@ -103,7 +125,19 @@ const useStyles = makeStyles(theme => ({
     padding: '2px'
   },
   chatBoxMessages: {
-    padding: '2px'
+    padding: '2px',
+    position: 'relative',
+    overflow: 'hidden',
+    height: '85%',
+    width: '100%'
+  },
+  messageList: {
+    maxHeight: '100%',
+    top: 0,
+    left: 0,
+    right: -theme.spacing(2),
+    position: 'absolute',
+    overflowY: 'scroll'
   },
   actionButtons: {
     position: 'absolute',
@@ -112,6 +146,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     boxShadow: 'none',
     gridAutoFlow: 'column',
+    zIndex: 3,
     // left: '0',
     // right: '0',
     marginLeft: 'auto',
@@ -133,37 +168,9 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Video = props => {
-  console.log(props.peer)
-  const ref = useRef()
-  const classes = useStyles()
-  const dimension =
-    Math.sqrt(window.screen.availWidth * window.screen.availHeight) / 1.4
-
-  useEffect(() => {
-    console.log('video started')
-    props.peer.on('stream', stream => {
-      console.log(stream)
-      ref.current.srcObject = stream
-    })
-  }, [])
-
-  return (
-    <video
-      playsInline
-      width={dimension / Math.sqrt(1 + props.numpeers)}
-      height={dimension / Math.sqrt(1 + props.numpeers)}
-      autoPlay
-      style={{ display: props.video ? 'block' : 'none' }}
-      className={classes.video}
-      ref={ref}
-    />
-  )
-}
-
 const videoConstraints = {
-  height: window.screen.availHeight,
-  width: window.screen.availWidth
+  // height: usersDiv.current.offsetHeight,
+  // width: usersDiv.current.offsetWidth
 }
 
 const Room = React.memo(props => {
@@ -178,22 +185,29 @@ const Room = React.memo(props => {
   const [allMessages, setAllMessages] = useState([])
   const [websocket, setWebSocket] = useState([])
   var socketRef = useRef()
-  var [dimension, setDimension] = useState(window.screen.availHeight)
+  var [dimension, setDimension] = useState(100)
+  var [videoHeight, setVideoHeight] = useState(window.screen.availHeight / 2)
+  var [videoWidth, setVideoWidth] = useState(window.screen.availWidth / 2)
   const userVideo = useRef()
+  const messageBox = useRef()
+  // const duserVideo = useRef()
+  const usersDiv = useRef()
   var localstream = useRef()
   const [mystream, setMystream] = useState()
   const [video, setVideo] = useState(true)
+  const [col, setCol] = useState(0)
+  const [show, setShow] = useState(true)
+  const [showDetails, setShowDetails] = useState(true)
   const [chatBoxOpen, setChatBoxOpen] = useState(false)
+  const [allUsersBoxOpen, setAllUsersBoxOpen] = useState(false)
   const [audio, setAudio] = useState(true)
   const [roomExist, setRoomExists] = useState(false)
   const peersRef = useRef([])
   const classes = useStyles()
-
+  // console.log(usersDiv)
   useEffect(() => {
     console.log('initialize')
-    const d =
-      Math.sqrt(window.screen.availHeight * window.screen.availWidth) / 1.4
-    setDimension(d)
+    props.getAllMessages(props.match.params.id)
     return () => {
       const tracks = localstream.current.getTracks()
       tracks.map(track => {
@@ -210,12 +224,60 @@ const Room = React.memo(props => {
   }, [peers])
 
   useEffect(() => {
+    console.log(allMessages.length)
+    if (messageBox.current) {
+      console.log(messageBox.current.scrollTop)
+      messageBox.current.scrollTop = messageBox.current.scrollHeight
+      console.log(messageBox.current.scrollTop)
+    }
+  }, [messageBox.current, props.messages.length])
+
+  useEffect(() => {
+    if (usersDiv.current) {
+      // const d =
+      //   Math.sqrt(usersDiv.current.offsetWidth * usersDiv.current.offsetWidth) /
+      //   2
+      // setDimension(d)
+      var n = 0
+      if (show) {
+        n++
+      }
+      n += peersRef.current.filter(peer => peer.show === true).length
+      if (n == 0) {
+        setShowDetails(true)
+      } else {
+        setShowDetails(false)
+      }
+      var numCol = Math.sqrt(n)
+      if (usersDiv.current.offsetHeight < usersDiv.current.offsetWidth) {
+        numCol = Math.ceil(numCol)
+      } else {
+        numCol = Math.floor(numCol)
+      }
+      setCol(numCol)
+      const numRow = Math.ceil(n / numCol)
+      setVideoHeight(usersDiv.current.offsetHeight / (1.2 * numRow))
+      setVideoWidth(usersDiv.current.offsetWidth / (1.2 * numCol))
+      console.log('dimension changed')
+      console.log(col)
+      // console.log(d)
+    }
+  }, [
+    usersDiv.current,
+    peers,
+    show,
+    chatBoxOpen,
+    allUsersBoxOpen,
+    peersRef.current.length
+  ])
+
+  useEffect(() => {
     // let data = {
     //   id: props.match.params.id,
     //   sharing_id: props.match.params.code
     // }
     // data = JSON.stringify(data)
-    console.log("currentroom.id changes")
+    console.log('currentroom.id changes')
     console.log(currentRoom)
     props.getRoomDetails(props.match.params.id, () => {
       console.log(currentRoom && currentRoom.created_by.pk == props.myuser.pk)
@@ -225,6 +287,7 @@ const Room = React.memo(props => {
           .then(stream => {
             console.log(stream)
             userVideo.current.srcObject = stream
+            // duserVideo.current.srcObject = stream
             localstream.current = stream
             setMystream(stream)
           })
@@ -247,7 +310,7 @@ const Room = React.memo(props => {
           .then(stream => {
             console.log(stream)
             userVideo.current.srcObject = stream
-            // dummyUserVideo.current.srcObject = stream
+            // dUserVideo.current.srcObject = stream
             localstream.current = stream
             setMystream(stream)
           })
@@ -270,19 +333,24 @@ const Room = React.memo(props => {
         //   console.log('looping')
         // })
         setWebSocket(WebSocketInstance)
-        WebSocketInstance.sendSignal('join room', { video, audio })
+        WebSocketInstance.sendSignal('join room', {
+          video,
+          audio,
+          onlyChat: false
+        })
         WebSocketInstance.on('request invite', user => {
           let presentInUsers =
             props.currentRoom.all_users.indexOf(user.id) != -1
           console.log(props.currentRoom.all_users)
           console.log(user.id == props.currentRoom.created_by.pk)
-          console.log(user.id == props.currentRoom.created_by.pk || presentInUsers)
+          console.log(
+            user.id == props.currentRoom.created_by.pk || presentInUsers
+          )
           if (user.id == props.currentRoom.created_by.pk || presentInUsers) {
             WebSocketInstance.sendSignal('accept invite', user.id)
-          }
-          else if (
+          } else if (
             props.currentRoom.created_by.pk == props.myuser.pk &&
-            currentRoom.created_by.pk != user.id 
+            currentRoom.created_by.pk != user.id
           ) {
             toast(
               t => (
@@ -340,6 +408,7 @@ const Room = React.memo(props => {
                     peerName: user[1],
                     video: user[2],
                     audio: user[3],
+                    show: true,
                     peer
                   })
                   allPeers.push({
@@ -347,6 +416,7 @@ const Room = React.memo(props => {
                     peerName: user[1],
                     video: user[2],
                     audio: user[3],
+                    show: true,
                     peer
                   })
                   console.log('created peer ' + user[1])
@@ -381,6 +451,7 @@ const Room = React.memo(props => {
                 peerName: payload.caller[1],
                 video: payload.caller[2],
                 audio: payload.caller[3],
+                show: true,
                 peer
               })
 
@@ -389,6 +460,7 @@ const Room = React.memo(props => {
                 peerName: payload.caller[1],
                 video: payload.caller[2],
                 audio: payload.caller[3],
+                show: true,
                 peer
               }
 
@@ -424,15 +496,22 @@ const Room = React.memo(props => {
         })
 
         WebSocketInstance.on('message received', payload => {
-          const msgObj = {
-            user: payload.user,
-            msg: payload.message
+          // const msgObj = {
+          //   user: payload.user,
+          //   msg: payload.message
+          // }
+          // setAllMessages(messages => [...messages, msgObj])
+          payload.user = JSON.parse(payload.user)
+          if (
+            props.myuser.first_name != payload.user.first_name &&
+            !chatBoxOpen
+          ) {
+            toast(`${payload.user.first_name} : ${payload.message}`, {
+              icon: '💬'
+            })
           }
-          setAllMessages(messages => [...messages, msgObj])
-          if (props.myuser.first_name != msgObj.user && !chatBoxOpen) {
-            toast(`${payload.user} : ${payload.message}`, { icon: '💬' })
-          }
-          console.log(allMessages)
+          // console.log(allMessages)
+          props.addMessage(payload)
         })
 
         WebSocketInstance.on('toggle video', payload => {
@@ -515,19 +594,19 @@ const Room = React.memo(props => {
   }
 
   function shareScreen () {
-    console.log(mystream)
-    console.log(peersRef.current[0].peer)
     navigator.mediaDevices
       .getDisplayMedia({ video: { cursor: 'always' }, audio: 'true' })
       .then(screenStream => {
-        console.log(screenStream.getVideoTracks())
-        let videoTrack = screenStream.getVideoTracks()[0]
-        // peersRef.current[0].peer.getSenders()[1].replaceTrack(screenStream.getTracks()[0])
-        userVideo.current.srcObject = screenStream
-        // screenStream.getTracks()[0].onended = () =>{
-        // peers[0].peer.getSenders.find(function(s){return s.track.kind == videoTrack.kind}).replaceTrack(videoTrack)
-        // userVideo.current.srcObject=mystream
-        // }
+        for (let index = 0; index < peersRef.current.length; index++) {
+          peersRef.current[index].peer.replaceTrack(
+            localstream.current.getVideoTracks()[0],
+            screenStream.getVideoTracks()[0],
+            localstream.current
+          )
+        }
+        setPeers([...peersRef.current])
+        localstream.current.removeTrack(localstream.current.getVideoTracks()[0])
+        localstream.current.addTrack(screenStream.getVideoTracks()[0])
       })
   }
 
@@ -540,14 +619,44 @@ const Room = React.memo(props => {
     setMessage(event.target.value)
   }
 
+  function togglePeerShow (peer) {
+    var newPeers = peersRef.current
+    for (var i in newPeers) {
+      if (newPeers[i].peerID == peer.peerID) {
+        newPeers[i].show = !newPeers[i].show
+        break //Stop this loop, we found it!
+      }
+    }
+    setPeers([...newPeers])
+    peersRef.current = newPeers
+    console.log(peersRef.current)
+  }
+
   function toggleChatBoxOpen () {
+    setAllUsersBoxOpen(false)
     setChatBoxOpen(!chatBoxOpen)
+  }
+
+  function toggleAllUsersBoxOpen () {
+    setChatBoxOpen(false)
+    setAllUsersBoxOpen(!allUsersBoxOpen)
   }
 
   function handleJoinRoom () {
     console.log('joining room')
     setPendingRequest(true)
     setInLobby(false)
+  }
+
+  function toggleShow () {
+    if (show) {
+      setShow(false)
+    } else {
+      setShow(true)
+      if (userVideo.current) {
+        userVideo.current.srcObject = localstream.current
+      }
+    }
   }
 
   function handleVideoToggle () {
@@ -592,79 +701,75 @@ const Room = React.memo(props => {
             container
             spacing={2}
             className={classes.paper}
+            ref={usersDiv}
+            style={{
+              gridTemplateColumns: `repeat(${col},1fr)`,
+              position: showDetails ? 'relative' : ''
+            }}
           >
-            <Grid
-              container
-              item
-              xs={12}
-              // style={{'display':'none'}}
-              // xs={12}
-              key={props.myuser.pk}
-              className={classes.userDiv}
-            >
-              {/* <Paper> */}
-              <Typography
-                variant='h5'
-                className={classes.userDetailDiv}
-                style={{ display: video ? 'block' : 'none' }}
-                gutterBottom
-              >
-                {props.myuser.first_name}
-              </Typography>
-              <video
-                width={dimension / Math.sqrt(1 + peersRef.current.length)}
-                height={dimension / Math.sqrt(1 + peersRef.current.length)}
-                playsInline
-                muted
-                style={{ display: video ? 'block' : 'none' }}
-                autoPlay
-                className={classes.video}
-                ref={userVideo}
-              />
-              <VideoOffDiv
-                name={props.myuser.first_name}
-                audio={audio}
-                video={video}
-                dimension={dimension}
-                numpeers={peersRef.current.length}
-              />
-              {/* </Paper> */}
+            <Grid className={classes.actionButtons}>
+              <Button onClick={handleVideoToggle}>
+                {video ? <VideocamIcon /> : <VideocamOffIcon />}
+              </Button>
+              <Button onClick={handleAudioToggle}>
+                {audio ? <MicIcon /> : <MicOffIcon />}
+              </Button>
+              <Button onClick={toggleChatBoxOpen}>
+                <ChatIcon />
+              </Button>
+              <Button onClick={toggleAllUsersBoxOpen}>
+                <GroupIcon />
+              </Button>
+              <Button onClick={handleDisconnect}>
+                <CallEndIcon />
+              </Button>
+              <Button onClick={shareScreen}>
+                <ScreenShareIcon />
+              </Button>
             </Grid>
+            {showDetails && <RoomData meeting={false} />}
+            <UserCard
+              key={props.myuser.pk - 100}
+              video={video}
+              audio={audio}
+              dimensions={dimension / Math.sqrt(2 + peersRef.current.length)}
+              width={videoWidth}
+              height={videoHeight}
+              show={show}
+              refer={userVideo}
+              name={props.myuser.first_name}
+              numpeers={peersRef.current.length}
+            />
+            {/* <UserCard
+              key={props.myuser.pk}
+              video={video}
+              audio={audio}
+              dimensions={dimension / Math.sqrt(2 + peersRef.current.length)}
+              width={videoWidth}
+              height={videoHeight}
+              refer={duserVideo}
+              name={props.myuser.first_name}
+              numpeers={peersRef.current.length}
+            /> */}
 
             {peersRef.current.map(peer => {
               console.log(peer)
               return (
-                <Grid
-                  // container
-                  xs={12}
-                  // xs={12}
-                  item
+                <UserCard
                   key={peer.peerID}
-                  className={classes.userDiv}
-                >
-                  {/* <Paper> */}
-                  <Typography
-                    variant='h5'
-                    className={classes.userDetailDiv}
-                    gutterBottom
-                    style={{ display: peer.video ? 'block' : 'none' }}
-                  >
-                    {peer.peerName}
-                  </Typography>
-                  <Video
-                    peer={peer.peer}
-                    video={peer.video}
-                    numpeers={peersRef.current.length}
-                  />
-                  <VideoOffDiv
-                    name={peer.peerName}
-                    audio={peer.audio}
-                    video={peer.video}
-                    dimension={dimension}
-                    numpeers={peersRef.current.length}
-                  />
-                  {/* </Paper> */}
-                </Grid>
+                  video={peer.video}
+                  audio={peer.audio}
+                  dimensions={
+                    dimension / Math.sqrt(2 + peersRef.current.length)
+                  }
+                  width={videoWidth}
+                  height={videoHeight}
+                  refer={null}
+                  show={peer.show}
+                  peer={peer}
+                  name={peer.peerName}
+                  numpeers={peersRef.current.length}
+                />
               )
             })}
           </Grid>
@@ -675,19 +780,7 @@ const Room = React.memo(props => {
                   <ArrowBackIcon onClick={toggleChatBoxOpen} />
                 </IconButton>
               </Grid>
-              {/* <StepLabel>
-                Messages are not saved and will be removed once you disconnect
-              </StepLabel> */}
-              <Grid className={classes.chatBoxMessages}>
-                {allMessages.map(obj => {
-                  return (
-                    <div>
-                      <div>{obj.user}</div>
-                      <div>{obj.msg}</div>
-                    </div>
-                  )
-                })}
-              </Grid>
+              <ChatBox />
               <Grid className={classes.chatBoxInput}>
                 <TextField
                   color='secondary'
@@ -716,58 +809,104 @@ const Room = React.memo(props => {
           ) : (
             ''
           )}
+          {allUsersBoxOpen ? (
+            <Grid className={classes.chatBox}>
+              <Grid className={classes.chatBoxIntro}>
+                <IconButton>
+                  <ArrowBackIcon onClick={toggleAllUsersBoxOpen} />
+                </IconButton>
+              </Grid>
+              <Grid>
+                <List>
+                  <ListItem key='RemySharp'>
+                    <ListItemIcon>
+                      <Avatar color='inherit'>
+                        {props.myuser.first_name[0]}
+                      </Avatar>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={props.myuser.first_name}
+                    ></ListItemText>
+                    <IconButton onClick={handleVideoToggle}>
+                      {video ? <VideocamIcon /> : <VideocamOffIcon />}
+                    </IconButton>
+                    <IconButton onClick={handleAudioToggle}>
+                      {audio ? <MicIcon /> : <MicOffIcon />}
+                    </IconButton>
+                    <IconButton onClick={() => toggleShow()}>
+                      {show ? <GridOnIcon /> : <GridOffIcon />}
+                    </IconButton>
+                  </ListItem>
+                </List>
+                <Divider />
+                <Grid item xs={12} style={{ padding: '10px' }}>
+                  <TextField
+                    id='outlined-basic-email'
+                    label='Search'
+                    variant='outlined'
+                    fullWidth
+                  />
+                </Grid>
+                <Divider />
+                <List>
+                  {peersRef.current.map(peer => {
+                    console.log(peer)
+                    return (
+                      <ListItem key='RemySharp'>
+                        <ListItemIcon>
+                          <Avatar color='inherit'>{peer.peerName[0]}</Avatar>
+                        </ListItemIcon>
+                        <ListItemText primary={peer.peerName}>
+                          Remy Sharp
+                        </ListItemText>
+                        <IconButton disabled>
+                          {peer.video ? <VideocamIcon disabled /> : <VideocamOffIcon disabled />}
+                        </IconButton>
+                        <IconButton disabled>
+                          {peer.audio ? <MicIcon disabled /> : <MicOffIcon disabled />}
+                        </IconButton>
+                        <IconButton onClick={() => togglePeerShow(peer)}>
+                          {peer.show ? <GridOnIcon /> : <GridOffIcon />}
+                        </IconButton>
+                      </ListItem>
+                    )
+                  })}
+                </List>
+              </Grid>
+            </Grid>
+          ) : (
+            ''
+          )}
         </div>
-        <Grid className={classes.actionButtons}>
-          <Button onClick={handleVideoToggle}>
-            {video ? <VideocamIcon /> : <VideocamOffIcon />}
-          </Button>
-          <Button onClick={handleAudioToggle}>
-            {audio ? <MicIcon /> : <MicOffIcon />}
-          </Button>
-          <Button onClick={toggleChatBoxOpen}>
-            <ChatIcon />
-          </Button>
-          <Button onClick={handleDisconnect}>
-            <CallEndIcon />
-          </Button>
-          <Button onClick={shareScreen}>
-            <ScreenShareIcon />
-          </Button>
-        </Grid>
       </div>
     ) : (
       <div>
-        <Typography variant='h5' className={classes.userDetailDiv} gutterBottom>
-          {props.myuser.first_name}
-        </Typography>
-        <video
-          width={
-            peers.length == 0 || window.screen.availWidth < 1400
-              ? window.screen.availWidth / 1.3
-              : window.screen.availWidth / 2.2
-          }
-          height={
-            peers.length == 0
-              ? window.screen.availHeight / 1.3
-              : window.screen.availWidth < 1400
-              ? window.screen.availHeight / 2.3
-              : window.screen.availHeight / 1.3
-          }
-          playsInline
-          muted
-          autoPlay
-          className={classes.video}
-          ref={userVideo}
-        />
-        <Button onClick={handleVideoToggle}>
-          {video ? <VideocamIcon /> : <VideocamOffIcon />}
-        </Button>
-        <Button onClick={handleAudioToggle}>
-          {audio ? <MicIcon /> : <MicOffIcon />}
-        </Button>
-        <Button onClick={handleJoinRoom} disabled={pendingRequest}>
-          Join room
-        </Button>
+        <div className={classes.introLobby}>
+          <UserCard
+            key={props.myuser.pk}
+            video={video}
+            audio={audio}
+            dimensions={dimension / Math.sqrt(1 + peersRef.current.length)}
+            width={videoWidth}
+            show={show}
+            height={videoHeight}
+            refer={userVideo}
+            name={props.myuser.first_name}
+            numpeers={peersRef.current.length}
+          />
+          <div>
+            <Button onClick={handleVideoToggle}>
+              {video ? <VideocamIcon /> : <VideocamOffIcon />}
+            </Button>
+            <Button onClick={handleAudioToggle}>
+              {audio ? <MicIcon /> : <MicOffIcon />}
+            </Button>
+            <Button onClick={handleJoinRoom} disabled={pendingRequest}>
+              Join room
+            </Button>
+          </div>
+        </div>
+        <RoomData meeting={false} />
       </div>
     )
   ) : (
@@ -779,7 +918,9 @@ const mapStateToprops = state => {
   return {
     myuser: state.auth.user,
     currentRoom: state.room.currentRoom,
-    token: state.auth.token
+    token: state.auth.token,
+    messages: state.room.messages,
+    userDimension: state.room.userDimension
   }
 }
 
@@ -787,20 +928,29 @@ const mapDispatchToprops = dispatch => {
   return {
     getRoomDetails: (id, handleSuccess) => {
       return dispatch(getRoomDetails(id, handleSuccess))
+    },
+    getAllMessages: (id, callback) => {
+      return dispatch(getAllMessages(id, callback))
+    },
+    addMessage: message => {
+      return dispatch(addMessage(message))
+    },
+    setUserDimension: dimension => {
+      return dispatch(setUserDimension(dimension))
     }
   }
 }
 export default withRouter(connect(mapStateToprops, mapDispatchToprops)(Room))
 
 // width={
-//   peers.length == 0 || window.screen.availWidth < 1400
-//     ? window.screen.availWidth / 1.3
-//     : window.screen.availWidth / 2.2
+//   peers.length == 0 || usersDiv.current.offsetWidth < 1400
+//     ? usersDiv.current.offsetWidth / 1.3
+//     : usersDiv.current.offsetWidth / 2.2
 // }
 // height={
 //   peers.length == 0
-//     ? window.screen.availHeight / 1.3
-//     : window.screen.availWidth < 1400
-//     ? window.screen.availHeight / 2.3
-//     : window.screen.availHeight / 1.3
+//     ? usersDiv.current.offsetHeight / 1.3
+//     : usersDiv.current.offsetWidth < 1400
+//     ? usersDiv.current.offsetHeight / 2.3
+//     : usersDiv.current.offsetHeight / 1.3
 // }

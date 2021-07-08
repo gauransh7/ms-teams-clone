@@ -64,4 +64,4 @@ class Message(models.Model):
         return f"Message {id} created by {message_user}"
 
     class Meta:
-        ordering = ['-created_on']
+        ordering = ['created_on']

@@ -15,7 +15,11 @@ import {
     DELETE_CHAT_ROOM_PENDING,
     GET_CURRENT_CHAT_ROOM_PENDING,
     CHATROOM_API_ERROR,
-    UPDATE_ROOMS_CREATED
+    UPDATE_ROOMS_CREATED,
+    GET_ALL_MESSAGES_PENDING,
+    SET_USER_DIMENSION,
+    ADD_MESSAGE,
+    SET_ALL_MESSAGES
 } from './chatRoomActionTypes'
 
 const apiDispatch = (actionType = '', data) => {
@@ -34,6 +38,7 @@ const apiError = error => {
 
 export const createChatRoom = (data, callback = () => {}) => {
     let url = chat_room;
+    console.log(data)
         
     return dispatch => {
         dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, true));
@@ -102,6 +107,27 @@ export const getRoomDetails = (id, callback = () => {}) => {
     }
 }
 
+export const getAllMessages = (id, callback = () => {}) => {
+    let url = chat_room + id + '/all_messages';
+    console.log("fetch messages")
+    return dispatch => {
+        dispatch(apiDispatch(GET_ALL_MESSAGES_PENDING, true));
+        apiClient
+            .get(url)
+            .then(res => {
+                console.log(res)
+                dispatch(apiDispatch(SET_ALL_MESSAGES, res.data));
+                dispatch(apiDispatch(GET_ALL_MESSAGES_PENDING, false));
+                callback();
+            })
+            .catch(error => {
+                dispatch(apiError(error));
+                dispatch(apiDispatch(GET_ALL_MESSAGES_PENDING, false));
+                dispatch(apiDispatch(SET_ALL_MESSAGES, []));
+            })
+    }
+}
+
 export const getAllRooms = () => {
     let url = my_rooms;
         
@@ -118,5 +144,17 @@ export const getAllRooms = () => {
                 dispatch(apiError(error));
                 dispatch(apiDispatch(GET_ALL_ROOMS_PENDING, false));
             })
+    }
+}
+
+export const addMessage = (msg) => {
+    return dispatch => {
+        dispatch(apiDispatch(ADD_MESSAGE, msg))
+    }
+}
+
+export const setUserDimension = (dimension) => {
+    return dispatch => {
+        dispatch(apiDispatch(SET_USER_DIMENSION, dimension))
     }
 }

@@ -43,7 +43,7 @@ class WebSocketService {
   }
 
   close () {
-    this.socketRef.close()
+    this.socketRef && this.socketRef.close()
   }
 
   on (action, func) {

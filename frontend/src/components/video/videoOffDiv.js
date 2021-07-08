@@ -1,17 +1,9 @@
-import React, { Component, useEffect, useState } from 'react'
-import { connect } from 'react-redux'
-import { useHistory, withRouter } from 'react-router-dom'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
 import {
-  Avatar,
-  Button,
-  Grid,
   Paper,
-  StepLabel,
-  TextField,
   Typography
 } from '@material-ui/core'
-import { createChatRoom } from '../../actions/chatRoomAction'
-import VideoCallIcon from '@material-ui/icons/VideoCall'
 import { makeStyles } from '@material-ui/styles'
 import MicIcon from '@material-ui/icons/Mic'
 import MicOffIcon from '@material-ui/icons/MicOff'
@@ -28,25 +20,22 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 const VideoOffDiv = props => {
-  const history = useHistory()
   const classes = useStyles()
-  const dimensions = props.dimension / Math.sqrt(1 + props.numpeers)
+  // const dimensions = props.dimension / Math.sqrt(1 + props.numpeers)
 
   return (
     <Paper
       className={classes.videoOffDiv}
       style={{
-        width: dimensions,
-        height: dimensions,
+        width: props.width,
+        height: props.height,
         display: props.video ? 'none' : ''
       }}
     >
-      {/* <Avatar color='inherit'> */}
       <div>
         <Typography variant='h5'>{props.name}</Typography>
         {props.audio ? <MicIcon /> : <MicOffIcon />}
       </div>
-      {/* </Avatar> */}
     </Paper>
   )
 }

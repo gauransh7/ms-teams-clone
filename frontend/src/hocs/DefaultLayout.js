@@ -28,7 +28,7 @@ const DefaultLayout = ({ children }) => {
         {/* {' '} */}
         <NavBar />
         <div
-          style={{ height: '100vh', backgroundColor: themeColors[theme], display: 'grid', alignContent: 'space-around' }}
+          style={{ height: '100vh', backgroundColor: themeColors[theme] }}
           className='w-100 fg-100 overflow-auto position-relative'
         >
           {children}

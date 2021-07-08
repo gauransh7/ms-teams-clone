@@ -1,10 +1,19 @@
 import React, { Component, useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { useHistory, withRouter } from 'react-router-dom'
-import { Button, Grid, Paper, StepLabel, TextField } from '@material-ui/core'
+import {
+  Button,
+  Grid,
+  Menu,
+  MenuItem,
+  Paper,
+  StepLabel,
+  TextField
+} from '@material-ui/core'
 import { createChatRoom } from '../../actions/chatRoomAction'
 import VideoCallIcon from '@material-ui/icons/VideoCall'
 import { makeStyles } from '@material-ui/styles'
+import toast, { Toaster } from 'react-hot-toast'
 
 const useStyles = makeStyles(theme => ({
   createRoomButton: {
@@ -25,10 +34,20 @@ const CreateRoom = props => {
   const [saveForLater, setSaveForLater] = useState(false)
   const [roomName, setRoomName] = useState('')
   const [roomNameError, setRoomNameError] = useState('')
+  const [anchorAvatarEl, setAnchorAvatarEl] = useState(null)
 
+  const handleAvatarBtnClick = event => {
+    console.log(event.currentTarget)
+    setAnchorAvatarEl(event.currentTarget)
+  }
+
+  const handleAvatarBtnClose = () => {
+    console.log('close')
+    setAnchorAvatarEl(null)
+  }
   useEffect(() => {
-    console.log("render")
-  },[])
+    console.log('render')
+  }, [])
 
   const handleRoomNameChange = e => {
     setRoomName(e.target.value)
@@ -38,17 +57,39 @@ const CreateRoom = props => {
     setOpenRoomName(!openRoomName)
   }
 
+  const handleLaunch = id => {
+    if (roomName == '') {
+      toast.error('Enter a room name')
+      return
+    }
+    switch (id) {
+      case 0:
+        handleCreateRoom(handleSuccessJoinMeeeting)
+        return
+      case 1:
+        handleCreateRoom(handleSuccessJoinConversation)
+        return
+      case 2:
+        handleCreateRoom()
+        return
+    }
+  }
+
   const handleCreateRoom = onSuccess => {
     let data = {
       room_name: roomName,
       created_by: props.user.pk
     }
     data = JSON.stringify(data)
-    setRoomName("")
+    setRoomName('')
     props.createChatRoom(data, onSuccess)
   }
-  const handleSuccess = (id, code) => {
+  const handleSuccessJoinMeeeting = (id, code) => {
     history.push(`/video/${id}/${code}`)
+  }
+
+  const handleSuccessJoinConversation = (id, code) => {
+    history.push(`/room/${id}`)
   }
   return (
     <Grid>
@@ -63,6 +104,7 @@ const CreateRoom = props => {
           {/* <FormLabel className={classes.formLabel} required>
             Room Name
           </FormLabel> */}
+          <Toaster />
           <TextField
             color='secondary'
             className={classes.textfield}
@@ -76,23 +118,41 @@ const CreateRoom = props => {
             error={roomNameError ? true : false}
           />
           <div className={classes.buttonsDiv}>
-            <Button color='secondary' onClick={toggleOpenRoomName}>
+            <Button size='large' color='secondary' onClick={toggleOpenRoomName}>
               Cancel
             </Button>
             <Button
-              disabled={roomName === ''}
-              onClick={handleCreateRoom}
+              aria-controls='avatar-dropdown'
+              content='avatar'
+              variant='contained'
               color='secondary'
+              aria-haspopup='true'
+              color='inherit'
+              size='large'
+              // className='header-title-button'
+              onClick={handleAvatarBtnClick}
+              startIcon={<VideoCallIcon />}
             >
-              Save for later
+              Launch
             </Button>
-            <Button
-              disabled={roomName === ''}
-              onClick={() => handleCreateRoom(handleSuccess)}
-              color='secondary'
+            <Menu
+              id='avatar-dropdown'
+              anchorEl={anchorAvatarEl}
+              // keepMounted
+              open={Boolean(anchorAvatarEl)}
+              onClose={handleAvatarBtnClose}
+              style={{ marginTop: '30px' }}
+              onClick={() => props.logout}
+              // style={{ marginTop: '30px' }}
             >
-              Join
-            </Button>
+              <MenuItem onClick={() => handleLaunch(0)}>Start Meeting</MenuItem>
+              <MenuItem onClick={() => handleLaunch(1)}>
+                Start Conversation
+              </MenuItem>
+              <MenuItem onClick={() => handleLaunch(2)}>
+                Save for later
+              </MenuItem>
+            </Menu>
           </div>
         </div>
       ) : (

@@ -32,11 +32,30 @@ export const apiError = type => error => {
   }
 }
 
-export const getFormattedDate = date => {
-  var month = date.getMonth() + 1
-  var day = date.getDate()
-  var year = date.getFullYear()
-  return day + '/' + month + '/' + year
+const monthData = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'Octtober',
+  'November',
+  'December'
+]
+
+export function getModifiedDate(date) {
+  let newDate = new Date(date)
+  return (
+    monthData[newDate.getMonth()] +
+    ' ' +
+    newDate.getDate() +
+    ', ' +
+    newDate.getFullYear()
+  )
 }
 
 export const getInitials = (name = '') =>

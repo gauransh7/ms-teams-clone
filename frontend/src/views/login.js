@@ -13,7 +13,9 @@ const useStyles = makeStyles(theme => ({
   Login: {
     display: 'grid',
     gridAutoFlow: 'column',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: '100%',
   }
 }))
 

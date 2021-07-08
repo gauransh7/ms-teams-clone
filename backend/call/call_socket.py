@@ -1,5 +1,6 @@
 from channels.generic.websocket import WebsocketConsumer
-from call.models import ChatRoom
+from call.models import ChatRoom, Message
+from call.serializers import MessageSerializer
 from accounts.models import User
 from asgiref.sync import async_to_sync
 import json
@@ -28,9 +29,9 @@ class ChatConsumer(WebsocketConsumer):
             print(self.socket_to_room.get(room.id))
             if room.id in self.socket_to_room:
                 if not any(x['user'] ==self.scope['user'] for x in self.socket_to_room.get(room.id)):
-                    self.socket_to_room.get(room.id).append({"user" : self.scope['user'], "video": True, "audio": True})
+                    self.socket_to_room.get(room.id).append({"user" : self.scope['user'], "video": True, "audio": True, 'onlyChat': False})
             else:
-                self.socket_to_room[room.id] = [{"user" : self.scope['user'], "video": True, "audio": True}]
+                self.socket_to_room[room.id] = [{"user" : self.scope['user'], "video": True, "audio": True, 'onlyChat':False}]
             print("connect")
             print(room.id)
             print(self.scope['user'].id)
@@ -68,8 +69,10 @@ class ChatConsumer(WebsocketConsumer):
                     if x['user'] == self.scope["user"]:
                         x['video'] = media["video"]
                         x['audio'] = media["audio"]
+                        x['onlyChat'] = media['onlyChat']
                         break
-                self.createSDP("request invite", {"email" : thisUser.email, "id" : thisUser.id, "name": thisUser.first_name})
+                if not media['onlyChat']:
+                    self.createSDP("request invite", {"email" : thisUser.email, "id" : thisUser.id, "name": thisUser.first_name})
             elif command == "reject invite":
                 print(content["message"])
                 user_rejected_id = content["message"]
@@ -84,9 +87,10 @@ class ChatConsumer(WebsocketConsumer):
                 thisUser = User.objects.get(id=content["message"])
                 if thisUser not in self.room.all_users.all():
                     self.room.all_users.add(thisUser)
+                    self.room.save()
                 # Make them join the room
                 # user = self.scope['user']
-                all_user = [[x['user'].id, x['user'].first_name, x['video'], x['audio']] for x in self.socket_to_room.get(self.room.id)]
+                all_user = [[x['user'].id, x['user'].first_name, x['video'], x['audio']] for x in self.socket_to_room.get(self.room.id) if not x['onlyChat']]
                 # val = [x.get("id") for x in all_user_ids]
                 # print(val)
                 self.createSDP("all users", { "users": all_user, "id": content["message"]})
@@ -114,7 +118,14 @@ class ChatConsumer(WebsocketConsumer):
             elif command == "send_message":
                 print(content["message"])
                 thisUser = self.scope["user"]
-                self.createSDP("message received", { "user": thisUser.first_name, "message": content["message"]})
+                msg = Message.objects.create(room=self.room, user=thisUser, message=content['message'])
+                msg.save()
+                serializer = MessageSerializer(msg)
+                data = serializer.data
+                print(data)
+                print(data['user'])
+                data['user'] = json.dumps(data['user'])
+                self.createSDP("message received", data)
             
             elif command == "toggle video":
                 thisUser = self.scope["user"]

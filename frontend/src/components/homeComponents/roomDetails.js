@@ -18,7 +18,9 @@ const useStyles = makeStyles(theme => ({
   roomDetailsDiv: {
     width: '100%',
     display: 'grid',
-    justifyItems: 'center'
+    justifyItems: 'center',
+    height: '90%',
+    alignItems: 'center'
   }
 }))
 

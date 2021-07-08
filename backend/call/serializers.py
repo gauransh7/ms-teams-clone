@@ -13,6 +13,7 @@ class ChatRoomCreateSerializer(serializers.ModelSerializer):
 class ChatRoomSerializer(serializers.ModelSerializer):
 
     created_by = UserDetailsSerializer(read_only=True)
+    all_users = UserDetailsSerializer(read_only=True, many=True)
 
     class Meta:
         model = ChatRoom

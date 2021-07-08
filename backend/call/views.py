@@ -14,9 +14,12 @@ class ChatRoomViewSet(viewsets.ModelViewSet):
     # permission_classes = [ReadOnly]
     queryset = ChatRoom.objects.all()
     def get_serializer_class(self):
+        print("hello")
+        print(self.action)
         if self.action == 'GET':
             return ChatRoomSerializer
-        if self.action == 'POST':
+        if self.action == 'create':
+            print(self.request)
             return ChatRoomCreateSerializer
         return ChatRoomSerializer
 

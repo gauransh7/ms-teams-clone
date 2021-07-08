@@ -3,6 +3,9 @@ import { connect } from 'react-redux'
 import { useHistory, withRouter } from 'react-router-dom'
 import {
   Button,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
   Paper,
   StepLabel,
@@ -15,18 +18,34 @@ import { makeStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles(theme => ({
   roomsList: {
-    width: '100%',
+    width: '80%',
     display: 'grid',
     justifyItems: 'center',
     overflow: 'hidden',
-    paddingBottom: theme.spacing(1)
+    paddingBottom: theme.spacing(1),
+    gridTemplateRows: 'min-content',
+    height: '80%'
   },
   list: {
     overflowY: 'scroll',
     maxHeight: window.screen.availHeight / 2,
     width: '100%',
     display: 'grid',
-    justifyItems: 'center'
+    justifyItems: 'center',
+    position: 'absolute'
+  },
+  listHeading: {
+    top: 0,
+    backgroundColor: theme.palette.primary.main,
+    width: '100%',
+    height: '50%',
+    marginLeft: '10%'
+  },
+  listWrapper: {
+    position: 'relative',
+    width: '100%',
+    height: '90%',
+    overflow: 'hidden'
   },
   webkitScrollbar: {
     width: 0 /* Remove scrollbar space */,
@@ -46,14 +65,18 @@ const RoomsList = props => {
   const classes = useStyles()
 
   return (
-    <div className={classes.roomsList}>
-      <StepLabel>{props.heading}</StepLabel>
+    <Card className={classes.roomsList}>
+      <CardContent color='secondary' className={classes.listHeading}>
+        <Typography variant='h5'>{props.heading}</Typography>
+      </CardContent>
+      <CardContent className={classes.listWrapper}>
       <div className={classes.list}>
         {props.rooms.map(room => (
           <ChatRoomCard room={room} invite={props.heading=="Your Invites"} />
         ))}
       </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 

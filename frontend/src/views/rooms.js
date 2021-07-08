@@ -15,6 +15,8 @@ const useStyles = makeStyles(theme => ({
     justifyItems: 'center',
     padding: theme.spacing(2),
     alignItems: 'center',
+    position: 'relative',
+    height: '100%',
     [theme.breakpoints.down('xs')]: {
       gridAutoFlow: 'row'
     }
