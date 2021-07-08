@@ -86,7 +86,7 @@ const RoomData = props => {
           </Typography>
           {currentRoom.id &&
             currentRoom.all_users.map(user => (
-              <Chip size='medium' color='secondary' label={`${user.email}`} />
+              <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`${user.email}`} />
             ))}
         </CardContent>
         <CardActions style={{ justifyContent: 'center' }}>

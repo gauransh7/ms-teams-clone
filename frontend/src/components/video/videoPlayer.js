@@ -14,7 +14,10 @@ import {
   ListItemText,
   ListItemIcon,
   Avatar,
-  Divider
+  Divider,
+  Fab,
+  Menu,
+  MenuItem
 } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
@@ -32,6 +35,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import TimeAgo from 'react-timeago'
 // import styled from "styled-components";
 import WebSocketInstance from '../../websocket/socket'
+import RoomDetailsModal from '../common/roomDataModal'
 import VideocamIcon from '@material-ui/icons/Videocam'
 import VideocamOffIcon from '@material-ui/icons/VideocamOff'
 import MicIcon from '@material-ui/icons/Mic'
@@ -40,6 +44,7 @@ import CallEndIcon from '@material-ui/icons/CallEnd'
 import ChatIcon from '@material-ui/icons/Chat'
 import SendIcon from '@material-ui/icons/Send'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
+import DetailsIcon from '@material-ui/icons/Details'
 import ScreenShareIcon from '@material-ui/icons/ScreenShare'
 import VideoOffDiv from './videoOffDiv'
 import RoomChat from '../rooms/roomChat'
@@ -47,8 +52,9 @@ import UserCard from './userCard'
 import ChatBox from '../common/chatBox'
 import GridOnIcon from '@material-ui/icons/GridOn'
 import GridOffIcon from '@material-ui/icons/GridOff'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
 import RoomData from '../rooms/roomData'
-import GroupIcon from '@material-ui/icons/Group';
+import GroupIcon from '@material-ui/icons/Group'
 
 const useStyles = makeStyles(theme => ({
   video: {
@@ -141,7 +147,7 @@ const useStyles = makeStyles(theme => ({
   },
   actionButtons: {
     position: 'absolute',
-    bottom: '2rem',
+    bottom: 0,
     display: 'grid',
     justifyContent: 'center',
     boxShadow: 'none',
@@ -149,16 +155,28 @@ const useStyles = makeStyles(theme => ({
     zIndex: 3,
     // left: '0',
     // right: '0',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    [theme.breakpoints.up('md')]: {
-      right: 0,
-      left: 0
-    },
-    [theme.breakpoints.down('xs')]: {
-      gridAutoFlow: 'row'
-    }
+    // marginLeft: 'auto',
+    // marginRight: 'auto',
+    right: 0,
+    left: 0
+    // [theme.breakpoints.up('md')]: {
+
+    // },
+    // [theme.breakpoints.down('xs')]: {
+    //   // gridAutoFlow: 'row'
+    // }
     // left: '40%'
+  },
+  desktopButton: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none'
+    }
+  },
+  mobileButton: {
+    display: 'none',
+    [theme.breakpoints.down('xs')]: {
+      display: 'block'
+    }
   },
   textfield: {
     position: 'absolute',
@@ -186,16 +204,18 @@ const Room = React.memo(props => {
   const [websocket, setWebSocket] = useState([])
   var socketRef = useRef()
   var [dimension, setDimension] = useState(100)
-  var [videoHeight, setVideoHeight] = useState(window.screen.availHeight / 2)
-  var [videoWidth, setVideoWidth] = useState(window.screen.availWidth / 2)
+  var [videoHeight, setVideoHeight] = useState(window.screen.availHeight / 2.2)
+  var [videoWidth, setVideoWidth] = useState(window.screen.availWidth / 2.2)
   const userVideo = useRef()
   const messageBox = useRef()
   // const duserVideo = useRef()
   const usersDiv = useRef()
   var localstream = useRef()
   const [mystream, setMystream] = useState()
+  const [myVideoTrack, setMyVideoTrack] = useState(null)
   const [video, setVideo] = useState(true)
   const [col, setCol] = useState(0)
+  const [showRoomDetailModal, setShowRoomDetailModal] = useState(false)
   const [show, setShow] = useState(true)
   const [showDetails, setShowDetails] = useState(true)
   const [chatBoxOpen, setChatBoxOpen] = useState(false)
@@ -204,6 +224,9 @@ const Room = React.memo(props => {
   const [roomExist, setRoomExists] = useState(false)
   const peersRef = useRef([])
   const classes = useStyles()
+  const [anchorAvatarEl, setAnchorAvatarEl] = useState(null)
+  const [searchUser, setSearchUser] = useState('')
+
   // console.log(usersDiv)
   useEffect(() => {
     console.log('initialize')
@@ -289,6 +312,7 @@ const Room = React.memo(props => {
             userVideo.current.srcObject = stream
             // duserVideo.current.srcObject = stream
             localstream.current = stream
+            setMyVideoTrack(stream.getVideoTracks()[0])
             setMystream(stream)
           })
           .catch(err => {
@@ -312,6 +336,7 @@ const Room = React.memo(props => {
             userVideo.current.srcObject = stream
             // dUserVideo.current.srcObject = stream
             localstream.current = stream
+            setMyVideoTrack(stream.getVideoTracks()[0])
             setMystream(stream)
           })
           .catch(err => {
@@ -549,6 +574,19 @@ const Room = React.memo(props => {
     }
   }, [roomExist, inLobby])
 
+  const handleAvatarBtnClick = event => {
+    console.log(event.currentTarget)
+    setAnchorAvatarEl(event.currentTarget)
+  }
+
+  const handleAvatarBtnClose = () => {
+    setAnchorAvatarEl(null)
+  }
+
+  const handleSearchUser = e => {
+    setSearchUser(e.target.value)
+  }
+
   function handleUserAccept (toast_id, user_id) {
     WebSocketInstance.sendSignal('accept invite', user_id)
     toast.dismiss(toast_id)
@@ -594,10 +632,13 @@ const Room = React.memo(props => {
   }
 
   function shareScreen () {
+    setMyVideoTrack(localstream.current.getVideoTracks()[0])
+    console.log(myVideoTrack)
     navigator.mediaDevices
       .getDisplayMedia({ video: { cursor: 'always' }, audio: 'true' })
       .then(screenStream => {
         for (let index = 0; index < peersRef.current.length; index++) {
+          console.log(screenStream.getVideoTracks()[0])
           peersRef.current[index].peer.replaceTrack(
             localstream.current.getVideoTracks()[0],
             screenStream.getVideoTracks()[0],
@@ -607,12 +648,32 @@ const Room = React.memo(props => {
         setPeers([...peersRef.current])
         localstream.current.removeTrack(localstream.current.getVideoTracks()[0])
         localstream.current.addTrack(screenStream.getVideoTracks()[0])
+        screenStream.getVideoTracks()[0].onended = function () {
+          for (let index = 0; index < peersRef.current.length; index++) {
+            peersRef.current[index].peer.replaceTrack(
+              localstream.current.getVideoTracks()[0],
+              myVideoTrack,
+              localstream.current
+            )
+          }
+          setPeers([...peersRef.current])
+          localstream.current.removeTrack(
+            localstream.current.getVideoTracks()[0]
+          )
+          localstream.current.addTrack(myVideoTrack)
+        }
       })
   }
 
   function handleMessageSend () {
     WebSocketInstance.sendSignal('send_message', message)
     setMessage('')
+  }
+
+  function handleKeyPress (event) {
+    if(event.key === 'Enter'){
+      handleMessageSend()
+    }
   }
 
   function handleMessageChange (event) {
@@ -686,7 +747,7 @@ const Room = React.memo(props => {
     })
     // localstream.current.getTracks()[0].stop();
     // WebSocketInstance.close()
-    history.push('/')
+    history.push(`/room/${currentRoom.id}`)
   }
   console.log(pendingRequest)
   console.log(inLobby)
@@ -717,16 +778,65 @@ const Room = React.memo(props => {
               <Button onClick={toggleChatBoxOpen}>
                 <ChatIcon />
               </Button>
-              <Button onClick={toggleAllUsersBoxOpen}>
+              <Button
+                className={classes.desktopButton}
+                onClick={toggleAllUsersBoxOpen}
+              >
                 <GroupIcon />
               </Button>
-              <Button onClick={handleDisconnect}>
+              <Button
+                style={{ backgroundColor: 'red' }}
+                onClick={handleDisconnect}
+              >
                 <CallEndIcon />
               </Button>
-              <Button onClick={shareScreen}>
+              <Button className={classes.desktopButton} onClick={shareScreen}>
                 <ScreenShareIcon />
               </Button>
+              <Button
+                className={classes.desktopButton}
+                onClick={() => setShowRoomDetailModal(true)}
+              >
+                <DetailsIcon />
+              </Button>
+              <Button
+                aria-controls='avatar-dropdown'
+                content='avatar'
+                // variant='contained'
+                // color='secondary'
+                // aria-haspopup='true'
+                // color='inherit'
+                // size='large'
+                className={classes.mobileButton}
+                // className='header-title-button'
+                onClick={handleAvatarBtnClick}
+                startIcon={<MoreVertIcon />}
+              />
+              <Menu
+                id='avatar-dropdown'
+                anchorEl={anchorAvatarEl}
+                // keepMounted
+                open={Boolean(anchorAvatarEl)}
+                onClose={handleAvatarBtnClose}
+                style={{ marginBottom: '30px' }}
+                // style={{ marginTop: '30px' }}
+              >
+                <MenuItem onClick={toggleAllUsersBoxOpen}>
+                  Manage Users
+                </MenuItem>
+                <MenuItem onClick={shareScreen}>Share Screen</MenuItem>
+                <MenuItem onClick={() => setShowRoomDetailModal(true)}>
+                  View Details
+                </MenuItem>
+              </Menu>
             </Grid>
+            {showRoomDetailModal && (
+              <RoomDetailsModal
+                show={showRoomDetailModal}
+                meeting={false}
+                onClose={() => setShowRoomDetailModal(false)}
+              />
+            )}
             {showDetails && <RoomData meeting={false} />}
             <UserCard
               key={props.myuser.pk - 100}
@@ -786,6 +896,7 @@ const Room = React.memo(props => {
                   color='secondary'
                   className={classes.textfield}
                   onChange={handleMessageChange}
+                  onKeyPress={handleKeyPress}
                   value={message}
                   name='message'
                   variant='outlined'
@@ -843,6 +954,9 @@ const Room = React.memo(props => {
                   <TextField
                     id='outlined-basic-email'
                     label='Search'
+                    name={searchUser}
+                    value={searchUser}
+                    onChange={handleSearchUser}
                     variant='outlined'
                     fullWidth
                   />
@@ -850,9 +964,9 @@ const Room = React.memo(props => {
                 <Divider />
                 <List>
                   {peersRef.current.map(peer => {
-                    console.log(peer)
+                    console.log(searchUser)
                     return (
-                      <ListItem key='RemySharp'>
+                      <ListItem style={{display: peer.peerName.includes(searchUser) ? '' : 'none'}} key='RemySharp'>
                         <ListItemIcon>
                           <Avatar color='inherit'>{peer.peerName[0]}</Avatar>
                         </ListItemIcon>
@@ -860,10 +974,18 @@ const Room = React.memo(props => {
                           Remy Sharp
                         </ListItemText>
                         <IconButton disabled>
-                          {peer.video ? <VideocamIcon disabled /> : <VideocamOffIcon disabled />}
+                          {peer.video ? (
+                            <VideocamIcon disabled />
+                          ) : (
+                            <VideocamOffIcon disabled />
+                          )}
                         </IconButton>
                         <IconButton disabled>
-                          {peer.audio ? <MicIcon disabled /> : <MicOffIcon disabled />}
+                          {peer.audio ? (
+                            <MicIcon disabled />
+                          ) : (
+                            <MicOffIcon disabled />
+                          )}
                         </IconButton>
                         <IconButton onClick={() => togglePeerShow(peer)}>
                           {peer.show ? <GridOnIcon /> : <GridOffIcon />}

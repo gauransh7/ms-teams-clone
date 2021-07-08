@@ -23,6 +23,7 @@ const useStyles = makeStyles(theme => ({
     justifyItems: 'center',
     overflow: 'hidden',
     paddingBottom: theme.spacing(1),
+    backgroundColor: theme.palette.background,
     gridTemplateRows: 'min-content',
     height: '80%'
   },

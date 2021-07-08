@@ -16,8 +16,10 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd'
 const useStyles = makeStyles(theme => ({
   Card: {
     backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.contrastText,
     margin: theme.spacing(0.4),
     width: '80%',
+    cursor: 'pointer',
     justifyContent: 'space-between'
   },
   roomCardMainDiv: {
@@ -26,6 +28,9 @@ const useStyles = makeStyles(theme => ({
     display: 'grid',
     alignItems: 'center',
     justifyItems: 'center'
+  },
+  icons: {
+    color: theme.palette.secondary.contrastText,
   }
 }))
 
@@ -62,11 +67,11 @@ const ChatRoomCard = props => {
           <div style={{ marginInlineStart: 'auto' }}>
             {!props.invite && (
               <IconButton>
-                <PersonAddIcon onClick={handleAddUser} />
+                <PersonAddIcon className={classes.icons} onClick={handleAddUser} />
               </IconButton>
             )}
             <IconButton>
-              <LaunchIcon onClick={openRoom} />
+              <LaunchIcon className={classes.icons} onClick={openRoom} />
             </IconButton>
           </div>
         </CardActions>

@@ -115,6 +115,12 @@ const RoomChat = props => {
     setMessage('')
   }
 
+  function handleKeyPress (event) {
+    if(event.key === 'Enter'){
+      handleMessageSend()
+    }
+  }
+
   function handleMessageChange (event) {
     setMessage(event.target.value)
   }
@@ -129,6 +135,7 @@ const RoomChat = props => {
         color='secondary'
         className={classes.textfield}
         onChange={handleMessageChange}
+        onKeyPress={handleKeyPress}
         value={message}
         name='message'
         variant='outlined'

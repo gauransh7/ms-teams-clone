@@ -14,6 +14,7 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'fill',
     backgroundSize: 'cover',
     backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.contrastText,
     display: 'grid',
     alignItems: 'center',
     justifyItems: 'center'
