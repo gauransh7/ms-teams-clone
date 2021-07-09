@@ -29,11 +29,14 @@ const useStyles = makeStyles(theme => ({
   },
   list: {
     overflowY: 'scroll',
-    maxHeight: window.screen.availHeight / 2,
+    maxHeight: window.screen.availHeight / 1.3,
     width: '100%',
     display: 'grid',
     justifyItems: 'center',
-    position: 'absolute'
+    position: 'absolute',
+    [theme.breakpoints.down('xs')]: {
+      maxHeight: window.screen.availHeight / 2,
+    }
   },
   listHeading: {
     top: 0,
@@ -46,7 +49,8 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     width: '100%',
     height: '90%',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    display: 'grid'
   },
   webkitScrollbar: {
     width: 0 /* Remove scrollbar space */,

@@ -64,6 +64,7 @@ const UserCard = props => {
             height={props.height}
             playsInline
             muted
+            controls={true}
             style={{ display: props.video ? 'block' : 'none' }}
             autoPlay
             className={classes.video}

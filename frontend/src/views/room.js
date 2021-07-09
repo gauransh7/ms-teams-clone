@@ -17,19 +17,22 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     height: '100%',
     position: 'relative',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('md')]: {
       gridAutoFlow: 'row'
     }
   },
   roomDetailsButton: {
-    [theme.breakpoints.up('md')]: {
-      display: 'none'
+    display: 'none',
+    height: 'max-content',
+    [theme.breakpoints.down('md')]: {
+      display: 'block'
     }
   },
   roomDetailsDiv: {
-    // [theme.breakpoints.down('lg')]: {
+    display: 'grid',
+    [theme.breakpoints.down('md')]: {
       display: 'none'
-    // }
+    }
   }
 }))
 
@@ -42,7 +45,7 @@ const Room = props => {
   }, [])
   const classes = useStyles()
   return (
-    <Grid className={classes.Room}>
+    <Grid container className={classes.Room}>
       <Button
         variant='contained'
         color='secondary'
@@ -59,7 +62,9 @@ const Room = props => {
           onClose={() => setShowRoomDetailModal(false)}
         />
       )}
-      <RoomData className={classes.roomDetailsDiv} meeting={true} />
+      <div className={classes.roomDetailsDiv}>
+        <RoomData meeting={true} />
+        </div>
       <RoomChat />
     </Grid>
   )

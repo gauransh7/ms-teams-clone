@@ -50,7 +50,7 @@ const RoomData = props => {
   }
   return (
     <div className={classes.roomDataDiv}>
-      <Card style={{ textAlign: 'center' }}>
+      <Card style={{ textAlign: 'center', 'maxWidth': '60%' }}>
         <CardHeader
           // avatar={
           //   <Avatar aria-label="recipe" className={classes.avatar}>

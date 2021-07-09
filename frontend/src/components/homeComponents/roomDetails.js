@@ -17,10 +17,19 @@ import RoomsList from '../rooms/roomsList'
 const useStyles = makeStyles(theme => ({
   roomDetailsDiv: {
     width: '100%',
+    height: '60%',
+  },
+  roomList: {
+    height: '100%',
+    width: '100%',
     display: 'grid',
     justifyItems: 'center',
-    height: '90%',
-    alignItems: 'center'
+    [theme.breakpoints.down('xs')]: {
+      display: 'none'
+    }
+  },
+  title: {
+    textAlign: 'center'
   }
 }))
 
@@ -33,10 +42,12 @@ const RoomDetails = props => {
 
   return (
     <div className={classes.roomDetailsDiv}>
+    <div className={classes.roomList}>
       <RoomsList heading="Your rooms" rooms={props.roomsCreated.slice(0,2)} />
       <RoomsList heading="Your Invites" rooms={props.roomsInvited.slice(0,2)} />
+      </div>
       <Typography variant='h6' className={classes.title}>
-          <Button onClick={() => history.push('/rooms')}>View All</Button>
+          <Button onClick={() => history.push('/rooms')}>View All Rooms</Button>
         </Typography>
     </div>
   )

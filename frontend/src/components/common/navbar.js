@@ -12,6 +12,11 @@ import { logoutUser } from '../../actions/authAction'
 import { Avatar, MenuItem } from '@material-ui/core'
 import { changeTheme } from '../../actions/themeAction'
 import { getInitials } from '../../helpers/helperFunctions'
+import light from '../../assets/logo/default.png'
+import dark from '../../assets/logo/dark.png'
+import solarizedDark from '../../assets/logo/solarizedDark.png'
+import solarizedLight from '../../assets/logo/solarizedLight.png'
+import dracula from '../../assets/logo/dracula.png'
 
 const useStyles = makeStyles(theme => ({
   AppBar: {
@@ -28,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 const NavBar = props => {
   const classes = useStyles()
   const history = useHistory()
-
+  console.log(props.currentTheme)
   const [anchorThemeEl, setAnchorThemeEl] = useState(null)
   const [anchorAvatarEl, setAnchorAvatarEl] = useState(null)
 
@@ -38,7 +43,7 @@ const NavBar = props => {
   }
 
   const handleAvatarBtnClose = () => {
-    console.log("close")
+    console.log('close')
     setAnchorAvatarEl(null)
   }
 
@@ -54,7 +59,7 @@ const NavBar = props => {
     <AppBar position='static'>
       <Toolbar>
         <Typography variant='h6' className={classes.title}>
-          <Button onClick={() => history.push('/')}>MS TEAMS</Button>
+          <img onClick={() => history.push('/')} style={{'cursor': 'pointer'}} src={`${window.location.origin}/${props.currentTheme}.png`} />
         </Typography>
         <Button
           aria-controls='simple-theme-menu'
@@ -75,11 +80,6 @@ const NavBar = props => {
           onClose={handleThemeBtnClose}
           style={{ marginTop: '30px' }}
         >
-          {/* <div className='menu-list-section-header'>
-            <div className='menu-list-section-title'>Themes</div>
-            <div className='menu-list-section-divider'></div>
-          </div> */}
-
           <MenuItem
             className={props.currentTheme === 'default' && 'active-menu-option'}
             onClick={() => {
@@ -132,28 +132,30 @@ const NavBar = props => {
         </Menu>
         {props.user ? (
           <div>
-          <Button
-            aria-controls='avatar-dropdown'
-            content='avatar'
-            aria-haspopup='true'
-            color='inherit'
-            // className='header-title-button'
-            onClick={handleAvatarBtnClick}
-            startIcon={
-              <Avatar
-                // aria-controls='avatar-dropdown'
-                // content='themes'
-                // aria-haspopup='true'
-                color='inherit'
-                className={classes.avatar}
-              >
-                {getInitials(props.user.first_name + ' ' + props.user.last_name)
-                  .reduce((a, b) => a + b, '')
-                  .substr(0, 2)}
-              </Avatar>
-            }
-          >
-            {props.user.first_name}
+            <Button
+              aria-controls='avatar-dropdown'
+              content='avatar'
+              aria-haspopup='true'
+              color='inherit'
+              // className='header-title-button'
+              onClick={handleAvatarBtnClick}
+              startIcon={
+                <Avatar
+                  // aria-controls='avatar-dropdown'
+                  // content='themes'
+                  // aria-haspopup='true'
+                  color='inherit'
+                  className={classes.avatar}
+                >
+                  {getInitials(
+                    props.user.first_name + ' ' + props.user.last_name
+                  )
+                    .reduce((a, b) => a + b, '')
+                    .substr(0, 2)}
+                </Avatar>
+              }
+            >
+              {props.user.first_name}
             </Button>
             <Menu
               id='avatar-dropdown'
@@ -167,7 +169,7 @@ const NavBar = props => {
             >
               <MenuItem onClick={props.logout}>Logout</MenuItem>
             </Menu>
-            </div>
+          </div>
         ) : (
           ''
         )}

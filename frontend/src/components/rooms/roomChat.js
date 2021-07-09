@@ -38,7 +38,12 @@ const useStyles = makeStyles(theme => ({
     // justifyItems: 'center'
     position: 'relative',
     height: '90%',
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
+    [theme.breakpoints.down('xs')]: {
+      position: 'absolute',
+      width: '100%',
+      bottom: 0,
+    }
   },
   textfield: {
     position: 'absolute',
@@ -54,8 +59,11 @@ const useStyles = makeStyles(theme => ({
     padding: '2px',
     position: 'relative',
     overflow: 'hidden',
-    height: '85%',
-    width: '100%'
+    height: '82%',
+    width: '100%',
+    [theme.breakpoints.down('xs')]: {
+      height: '75%'
+    }
   },
   messageList: {
     maxHeight: '100%',

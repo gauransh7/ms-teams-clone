@@ -32,6 +32,7 @@ export const Video = props => {
       playsInline
       width={props.width}
       height={props.height}
+      controls={true}
       autoPlay
       style={{ display: props.video ? 'block' : 'none' }}
       className={classes.video}
