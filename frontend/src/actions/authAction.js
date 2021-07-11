@@ -58,6 +58,31 @@ export const GoogleLoginFtn = (data) => {
     }
 }
 
+export const FacebookLoginFtn = (data) => {
+    let url = facebook_login;
+    return dispatch => {
+        axios({
+            method: "POST",
+            url: url,
+            data: data,
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(res => {
+                console.log("done")
+                console.log(res)
+                dispatch(apiDispatch(SET_TOKEN, res.data.key));
+                Cookies.set('token', res.data.key, { expires: 7})
+                // localStorage.setItem("token", res.data.key);
+                // dispatch(apiDispatch(IS_LOGGED_IN, true))
+                dispatch(getUserData())
+            })
+            .catch(error => {
+                dispatch(apiError(error));
+                dispatch(apiDispatch(IS_LOGGED_IN, false))
+            })
+    }
+}
+
 export const getUserData = () => {
     console.log("fetch data")
     let url = who_am_i;
