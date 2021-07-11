@@ -14,7 +14,7 @@ class FacebookSocialAuth extends Component {
         access_token: response['accessToken'],
         code: response['userID']
       }
-      data = JSON.stringify(data)
+      console.log(data)
       this.props.FacebookLoginFtn(data)
     }
     return (

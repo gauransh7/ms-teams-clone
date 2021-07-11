@@ -65,7 +65,6 @@ export const FacebookLoginFtn = (data) => {
             method: "POST",
             url: url,
             data: data,
-            headers: { "Content-type": "application/json; charset=UTF-8" },
         })
             .then(res => {
                 console.log("done")
