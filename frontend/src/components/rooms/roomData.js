@@ -50,7 +50,7 @@ const RoomData = props => {
   }
   return (
     <div className={classes.roomDataDiv}>
-      <Card style={{ textAlign: 'center', 'maxWidth': '60%' }}>
+      <Card style={{ textAlign: 'center', maxWidth: '60%' }}>
         <CardHeader
           // avatar={
           //   <Avatar aria-label="recipe" className={classes.avatar}>
@@ -86,11 +86,13 @@ const RoomData = props => {
           </Typography>
           {currentRoom.id &&
             currentRoom.all_users.map(user => (
-              <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`${user.email}`} />
+              <Chip
+                style={{ margin: '0.2rem' }}
+                size='medium'
+                color='secondary'
+                label={`${user.email}`}
+              />
             ))}
-            <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`gauransh_d@ch.iitr.ac.in`} />
-            <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`gauransh_d@ch.iitr.ac.in`} />
-            <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`gauransh_d@ch.iitr.ac.in`} />
         </CardContent>
         <CardActions style={{ justifyContent: 'center' }}>
           {currentRoom.id && currentRoom.created_by.pk == props.user.pk && (
@@ -104,15 +106,17 @@ const RoomData = props => {
               Add User
             </Button>
           )}
-          {props.meeting && <Button
-            variant='contained'
-            color='secondary'
-            className={classes.createRoomButton}
-            startIcon={<VideoCallIcon />}
-            onClick={openRoom}
-          >
-            Join Meeting
-          </Button>}
+          {props.meeting && (
+            <Button
+              variant='contained'
+              color='secondary'
+              className={classes.createRoomButton}
+              startIcon={<VideoCallIcon />}
+              onClick={openRoom}
+            >
+              Join Meeting
+            </Button>
+          )}
           {/* </ListItem> */}
           {showAddUserModal && (
             <AddUserModal
