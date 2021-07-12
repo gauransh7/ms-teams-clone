@@ -22,6 +22,11 @@ const useStyles = makeStyles(theme => ({
   AppBar: {
     backgroundColor: theme.secondary
   },
+  hideMobile: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
   title: {
     flexGrow: 1
   },
@@ -59,7 +64,7 @@ const NavBar = props => {
     <AppBar position='static'>
       <Toolbar>
         <Typography variant='h6' className={classes.title}>
-          <img onClick={() => history.push('/')} style={{'cursor': 'pointer'}} src={`${window.location.origin}/${props.currentTheme}.png`} />
+          <img onClick={() => history.push('/login?next=')} style={{'cursor': 'pointer'}} src={`${window.location.origin}/${props.currentTheme}.png`} />
         </Typography>
         <Button
           aria-controls='simple-theme-menu'
@@ -70,7 +75,7 @@ const NavBar = props => {
           onClick={handleThemeBtnClick}
           startIcon={<Brightness4RoundedIcon />}
         >
-          Themes
+          <span className={classes.hideMobile}>Themes</span>
         </Button>
         <Menu
           id='simple-theme-menu'
@@ -155,7 +160,7 @@ const NavBar = props => {
                 </Avatar>
               }
             >
-              {props.user.first_name}
+              <span className={classes.hideMobile}>{props.user.first_name}</span>
             </Button>
             <Menu
               id='avatar-dropdown'

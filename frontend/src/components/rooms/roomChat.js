@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     height: '90%',
     backgroundColor: theme.palette.background.default,
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('md')]: {
       position: 'absolute',
       width: '100%',
       bottom: 0,
@@ -119,7 +119,7 @@ const RoomChat = props => {
   const classes = useStyles()
   const [message, setMessage] = useState('')
   function handleMessageSend () {
-    WebSocketInstance.sendSignal('send_message', message)
+    if(message!='') WebSocketInstance.sendSignal('send_message', message)
     setMessage('')
   }
 

@@ -18,6 +18,7 @@ const ProtectedRoute = React.memo(
     const [authenticationPending, setAuthenticationPending] = useState(true)
     const firstUpdate = useRef(true)
     const isLoggedIn = useSelector(state => state.auth.isLoggedIn)
+    const getChatRoomPending = useSelector(state => state.room.getChatRoomPending)
     const getUserDataPending = useSelector(
       state => state.auth.getUserDataPending
     )
@@ -45,7 +46,7 @@ const ProtectedRoute = React.memo(
         path={rest.path}
         exact={rest.exact}
         component={props => {
-          return authenticationPending === true ? (
+          return authenticationPending === true || getChatRoomPending ? (
             <Loader />
           ) : isLoggedIn ? (
             <Layout

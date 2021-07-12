@@ -320,7 +320,7 @@ const Room = React.memo(props => {
             toast.error('Cannot get access to your camera and video !')
           })
         console.log('admin hai ye')
-        setInLobby(false)
+        setInLobby(true)
       }
       setRoomExists(true)
     })
@@ -405,7 +405,8 @@ const Room = React.memo(props => {
         WebSocketInstance.on('invite was rejected', payload => {
           console.log(props.myuser.pk == payload.id)
           if (props.myuser.pk == payload.id) {
-            alert('Admin rejected your request')
+            // alert('Admin rejected your request')
+            toast("Admin rejected your request", { icon : 'ℹ️'})
             history.push('/')
           }
         })
@@ -416,7 +417,6 @@ const Room = React.memo(props => {
             userVideo.current.srcObject = localstream.current
           }
           if (payload.id == props.myuser.pk) {
-            console.log('all users received')
             console.log(payload.users)
             const allPeers = []
             payload.users.forEach(user => {
@@ -666,7 +666,7 @@ const Room = React.memo(props => {
   }
 
   function handleMessageSend () {
-    WebSocketInstance.sendSignal('send_message', message)
+    if(message != '') WebSocketInstance.sendSignal('send_message', message)
     setMessage('')
   }
 
@@ -704,7 +704,7 @@ const Room = React.memo(props => {
   }
 
   function handleJoinRoom () {
-    console.log('joining room')
+    if(props.myuser.pk != currentRoom.created_by.pk) toast.success("Notified Admin, waiting for approval...")
     setPendingRequest(true)
     setInLobby(false)
   }
@@ -1017,10 +1017,10 @@ const Room = React.memo(props => {
             numpeers={peersRef.current.length}
           />
           <div>
-            <Button onClick={handleVideoToggle}>
+            <Button disabled={pendingRequest} onClick={handleVideoToggle}>
               {video ? <VideocamIcon /> : <VideocamOffIcon />}
             </Button>
-            <Button onClick={handleAudioToggle}>
+            <Button disabled={pendingRequest} onClick={handleAudioToggle}>
               {audio ? <MicIcon /> : <MicOffIcon />}
             </Button>
             <Button onClick={handleJoinRoom} disabled={pendingRequest}>

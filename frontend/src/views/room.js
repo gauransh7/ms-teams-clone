@@ -17,8 +17,10 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     height: '100%',
     position: 'relative',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     [theme.breakpoints.down('md')]: {
-      gridAutoFlow: 'row'
+      gridAutoFlow: 'row',
+      gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
     }
   },
   roomDetailsButton: {

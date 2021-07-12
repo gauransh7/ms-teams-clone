@@ -104,7 +104,6 @@ const CreateRoom = props => {
           {/* <FormLabel className={classes.formLabel} required>
             Room Name
           </FormLabel> */}
-          <Toaster />
           <TextField
             color='secondary'
             className={classes.textfield}

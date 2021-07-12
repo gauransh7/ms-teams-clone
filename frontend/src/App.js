@@ -10,6 +10,7 @@ import { ContextProvider } from './Context'
 import PublicRoute from './PublicRoute'
 import { getUserData } from './actions/authAction'
 import themes from './assets/theme'
+import { Toaster } from 'react-hot-toast'
 
 const theme = theme =>
   createMuiTheme({
@@ -29,6 +30,7 @@ class App extends Component {
     // const { isLoginPending } = this.props
     return (
       <ThemeProvider theme={theme(this.props.currentTheme)}>
+      <Toaster />
       {/* <ContextProvider> */}
         <Router>
           <Switch>

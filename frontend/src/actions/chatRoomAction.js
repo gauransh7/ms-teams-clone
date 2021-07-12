@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import apiClient from '../helpers/apiClient';
 import { chat_room, myrooms, update_room_users, my_rooms } from '../urls/chatRoom';
 
@@ -78,6 +79,7 @@ export const updateRoomUsers = (data, id, callback = () => {}) => {
             })
             .catch(error => {
                 dispatch(apiError(error));
+                toast.error(error.response.data)
                 dispatch(apiDispatch(GET_CURRENT_CHAT_ROOM_PENDING, false));
                 dispatch(apiDispatch(CREATE_CHAT_ROOM_PENDING, false));
             })

@@ -9,6 +9,8 @@ const Loader = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        position: 'absolute',
+        width: '100%'
       }}
     >
       <div>

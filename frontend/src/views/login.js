@@ -8,6 +8,7 @@ import AuthGuide from '../components/auth/authGuide'
 import AuthProvider from '../components/auth/authProvider'
 import FacebookSocialAuth from '../components/auth/facebook'
 import GoogleSocialAuth from '../components/auth/google'
+import Loader from '../components/common/loader'
 
 const useStyles = makeStyles(theme => ({
   Login: {
@@ -21,7 +22,9 @@ const useStyles = makeStyles(theme => ({
 
 const LoginView = props => {
   const classes = useStyles()
-  return (
+  return props.getUserDataPending || props.loginPending ? (
+    <Loader />
+  ) : (
     <Grid className={classes.Login}>
       <AuthProvider />
       {/* <AuthGuide /> */}
@@ -31,7 +34,9 @@ const LoginView = props => {
 
 const mapStateToProps = state => {
   return {
-    user: state.auth.user
+    user: state.auth.user,
+    loginPending: state.auth.loginPending,
+    getUserDataPending: state.auth.getUserDataPending,
   }
 }
 

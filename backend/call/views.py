@@ -28,7 +28,10 @@ class ChatRoomViewSet(viewsets.ModelViewSet):
     def update_room_users(self, request, pk):
         print(request.data.get('sharing_id'))
         email = request.data.get('email')
-        user = User.objects.get(email=email)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response('The requested email is not registered.', 400)
         request_user = self.request.user
         print(request_user)
         try:

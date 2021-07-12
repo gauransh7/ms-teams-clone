@@ -88,6 +88,9 @@ const RoomData = props => {
             currentRoom.all_users.map(user => (
               <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`${user.email}`} />
             ))}
+            <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`gauransh_d@ch.iitr.ac.in`} />
+            <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`gauransh_d@ch.iitr.ac.in`} />
+            <Chip style={{'margin' : '0.2rem'}} size='medium' color='secondary' label={`gauransh_d@ch.iitr.ac.in`} />
         </CardContent>
         <CardActions style={{ justifyContent: 'center' }}>
           {currentRoom.id && currentRoom.created_by.pk == props.user.pk && (

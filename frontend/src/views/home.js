@@ -1,6 +1,6 @@
 import { Button, Card, Grid, Link, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import React, { Component, useEffect } from 'react'
+import React, { Component, memo, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Redirect, useHistory } from 'react-router'
 import { logoutUser } from '../actions/authAction'
@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Home = props => {
+const Home = memo(props => {
   useEffect(() => {
     console.log('render')
   }, [])
@@ -32,7 +32,7 @@ const Home = props => {
       <RoomDetails />
     </Grid>
   )
-}
+})
 
 const mapStateToProps = state => {
   return {
