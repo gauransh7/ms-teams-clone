@@ -13,7 +13,7 @@
     <a href="https://www.yourmeet.tech"><strong>Live »</strong></a>
     <br />
     <br />
-    <a href="#">Video Demo</a>
+    <a href="https://www.youtube.com/watch?v=KK831lGp38Y">Video Demo</a>
   </p>
 </p>
 
