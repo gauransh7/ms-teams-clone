@@ -109,9 +109,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
    ),
-#    'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAdminUser',
-#    ),
 }
 
 WSGI_APPLICATION = 'ms_teams.wsgi.application'

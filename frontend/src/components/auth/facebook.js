@@ -2,19 +2,15 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import FacebookLogin from 'react-facebook-login'
 import { FacebookLoginFtn } from '../../actions/authAction'
-// import facebookLogin from '../../auth/fblogin'
 import './css/authProvider.css'
 
 class FacebookSocialAuth extends Component {
   render () {
     const fbResponse = response => {
-      console.log('success')
-      console.log(response)
       let data = {
         access_token: response['accessToken'],
         code: response['userID']
       }
-      console.log(data)
       this.props.FacebookLoginFtn(data)
     }
     return (

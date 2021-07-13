@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { useHistory, withRouter } from 'react-router-dom'
 import {
@@ -6,14 +6,13 @@ import {
   Grid,
   Menu,
   MenuItem,
-  Paper,
   StepLabel,
   TextField
 } from '@material-ui/core'
 import { createChatRoom } from '../../actions/chatRoomAction'
 import VideoCallIcon from '@material-ui/icons/VideoCall'
 import { makeStyles } from '@material-ui/styles'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 const useStyles = makeStyles(theme => ({
   createRoomButton: {
@@ -37,17 +36,12 @@ const CreateRoom = props => {
   const [anchorAvatarEl, setAnchorAvatarEl] = useState(null)
 
   const handleAvatarBtnClick = event => {
-    console.log(event.currentTarget)
     setAnchorAvatarEl(event.currentTarget)
   }
 
   const handleAvatarBtnClose = () => {
-    console.log('close')
     setAnchorAvatarEl(null)
   }
-  useEffect(() => {
-    console.log('render')
-  }, [])
 
   const handleRoomNameChange = e => {
     setRoomName(e.target.value)

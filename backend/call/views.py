@@ -11,33 +11,27 @@ from call.serializers import ChatRoomSerializer, MessageSerializer, ChatRoomCrea
 
 
 class ChatRoomViewSet(viewsets.ModelViewSet):
-    # permission_classes = [ReadOnly]
+
     queryset = ChatRoom.objects.all()
+
     def get_serializer_class(self):
-        print("hello")
-        print(self.action)
         if self.action == 'GET':
             return ChatRoomSerializer
         if self.action == 'create':
-            print(self.request)
             return ChatRoomCreateSerializer
         return ChatRoomSerializer
 
     @action(detail=True, methods=['PATCH'], url_name='update_room_users',
             url_path='update_room_users')
     def update_room_users(self, request, pk):
-        print(request.data.get('sharing_id'))
         email = request.data.get('email')
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response('The requested email is not registered.', 400)
         request_user = self.request.user
-        print(request_user)
         try:
             instance = self.get_object()
-            print(instance.created_by)
-            print(request_user is not instance.created_by)
         except ChatRoom.DoesNotExist:
             return Response('ChatRoom does not exist', 404)
         if not request_user.id==instance.created_by.id:

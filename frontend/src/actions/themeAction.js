@@ -1,19 +1,15 @@
-import {
-    CHANGE_THEME,
-} from './themeActionType'
+import { CHANGE_THEME } from './themeActionType'
 
-export const setTheme = (theme) => {
-  console.log(theme)
+export const setTheme = theme => {
   return {
     type: CHANGE_THEME,
-    theme: theme,
+    theme: theme
   }
 }
 
-export const changeTheme = (theme = "default") => {
-  console.log(theme)
-  return (dispatch) => {
-    dispatch(setTheme(theme));
-    localStorage.setItem("theme", theme);
-  };
-};
+export const changeTheme = (theme = 'default') => {
+  return dispatch => {
+    dispatch(setTheme(theme))
+    localStorage.setItem('theme', theme)
+  }
+}

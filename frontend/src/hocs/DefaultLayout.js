@@ -1,16 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import NavBar from '../components/common/navbar'
-// import themes from '../assets/theme'
 
-const DefaultLayout = ({ children }) => {
+const DefaultLayout = React.memo(({ children }) => {
   const theme = localStorage.getItem('theme')
-  // console.log(themes)
-  // console.log(theme)
-  // console.log(themes[theme].primary.main)
+
   const themeColors = {
     default: '#ffffff',
     dark: '#242526',
-    palpatine: '#ffffff',
     solarizedLight: '#eee8d5',
     solarizedDark: '#0e2a35',
     dracula: '#282a36'
@@ -36,6 +32,6 @@ const DefaultLayout = ({ children }) => {
       </main>
     </div>
   )
-}
+})
 
 export default DefaultLayout

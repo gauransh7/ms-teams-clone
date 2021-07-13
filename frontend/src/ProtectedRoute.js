@@ -18,14 +18,13 @@ const ProtectedRoute = React.memo(
     const [authenticationPending, setAuthenticationPending] = useState(true)
     const firstUpdate = useRef(true)
     const isLoggedIn = useSelector(state => state.auth.isLoggedIn)
-    const getChatRoomPending = useSelector(state => state.room.getChatRoomPending)
+    const getChatRoomPending = useSelector(
+      state => state.room.getChatRoomPending
+    )
     const getUserDataPending = useSelector(
       state => state.auth.getUserDataPending
     )
-
     useLayoutEffect(() => {
-      console.log(rest)
-      console.log(rest.exact)
       if (firstUpdate.current) {
         firstUpdate.current = false
         return

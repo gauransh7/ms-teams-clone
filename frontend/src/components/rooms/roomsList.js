@@ -77,7 +77,7 @@ const RoomsList = props => {
       <CardContent className={classes.listWrapper}>
       <div className={classes.list}>
         {props.rooms.map(room => (
-          <ChatRoomCard room={room} invite={props.heading=="Your Invites"} />
+          <ChatRoomCard key={room.id} room={room} invite={props.heading=="Your Invites"} />
         ))}
       </div>
       </CardContent>

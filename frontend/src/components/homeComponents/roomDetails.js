@@ -1,23 +1,15 @@
-import React, { Component, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Link, useHistory, withRouter } from 'react-router-dom'
-import {
-  Button,
-  Grid,
-  Paper,
-  StepLabel,
-  TextField,
-  Typography
-} from '@material-ui/core'
+import { useHistory, withRouter } from 'react-router-dom'
+import { Button, Typography } from '@material-ui/core'
 import { createChatRoom, getAllRooms } from '../../actions/chatRoomAction'
-import ChatRoomCard from '../common/chatRoomCard'
 import { makeStyles } from '@material-ui/styles'
 import RoomsList from '../rooms/roomsList'
 
 const useStyles = makeStyles(theme => ({
   roomDetailsDiv: {
     width: '100%',
-    height: '60%',
+    height: '60%'
   },
   roomList: {
     height: '100%',
@@ -42,13 +34,19 @@ const RoomDetails = props => {
 
   return (
     <div className={classes.roomDetailsDiv}>
-    <div className={classes.roomList}>
-      <RoomsList heading="Your rooms" rooms={props.roomsCreated.slice(0,2)} />
-      <RoomsList heading="Your Invites" rooms={props.roomsInvited.slice(0,2)} />
+      <div className={classes.roomList}>
+        <RoomsList
+          heading='Your rooms'
+          rooms={props.roomsCreated.slice(0, 2)}
+        />
+        <RoomsList
+          heading='Your Invites'
+          rooms={props.roomsInvited.slice(0, 2)}
+        />
       </div>
       <Typography variant='h6' className={classes.title}>
-          <Button onClick={() => history.push('/rooms')}>View All Rooms</Button>
-        </Typography>
+        <Button onClick={() => history.push('/rooms')}>View All Rooms</Button>
+      </Typography>
     </div>
   )
 }

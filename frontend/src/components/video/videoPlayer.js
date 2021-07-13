@@ -227,9 +227,7 @@ const Room = React.memo(props => {
   const [anchorAvatarEl, setAnchorAvatarEl] = useState(null)
   const [searchUser, setSearchUser] = useState('')
 
-  // console.log(usersDiv)
   useEffect(() => {
-    console.log('initialize')
     props.getAllMessages(props.match.params.id)
     return () => {
       const tracks = localstream.current.getTracks()
@@ -242,16 +240,8 @@ const Room = React.memo(props => {
   }, [])
 
   useEffect(() => {
-    console.log('peers changed')
-    console.log(peers)
-  }, [peers])
-
-  useEffect(() => {
-    console.log(allMessages.length)
     if (messageBox.current) {
-      console.log(messageBox.current.scrollTop)
       messageBox.current.scrollTop = messageBox.current.scrollHeight
-      console.log(messageBox.current.scrollTop)
     }
   }, [messageBox.current, props.messages.length])
 
@@ -281,9 +271,6 @@ const Room = React.memo(props => {
       const numRow = Math.ceil(n / numCol)
       setVideoHeight(usersDiv.current.offsetHeight / (1.2 * numRow))
       setVideoWidth(usersDiv.current.offsetWidth / (1.2 * numCol))
-      console.log('dimension changed')
-      console.log(col)
-      // console.log(d)
     }
   }, [
     usersDiv.current,
@@ -295,31 +282,19 @@ const Room = React.memo(props => {
   ])
 
   useEffect(() => {
-    // let data = {
-    //   id: props.match.params.id,
-    //   sharing_id: props.match.params.code
-    // }
-    // data = JSON.stringify(data)
-    console.log('currentroom.id changes')
-    console.log(currentRoom)
     props.getRoomDetails(props.match.params.id, () => {
-      console.log(currentRoom && currentRoom.created_by.pk == props.myuser.pk)
       if (currentRoom && currentRoom.created_by.pk == props.myuser.pk) {
         navigator.mediaDevices
           .getUserMedia({ video: { videoConstraints }, audio: true })
           .then(stream => {
-            console.log(stream)
             userVideo.current.srcObject = stream
-            // duserVideo.current.srcObject = stream
             localstream.current = stream
             setMyVideoTrack(stream.getVideoTracks()[0])
             setMystream(stream)
           })
           .catch(err => {
-            console.log(err)
             toast.error('Cannot get access to your camera and video !')
           })
-        console.log('admin hai ye')
         setInLobby(true)
       }
       setRoomExists(true)
@@ -332,15 +307,12 @@ const Room = React.memo(props => {
         navigator.mediaDevices
           .getUserMedia({ video: { videoConstraints }, audio: true })
           .then(stream => {
-            console.log(stream)
             userVideo.current.srcObject = stream
-            // dUserVideo.current.srcObject = stream
             localstream.current = stream
             setMyVideoTrack(stream.getVideoTracks()[0])
             setMystream(stream)
           })
           .catch(err => {
-            console.log(err)
             toast.error('Cannot get access to your camera and video !')
           })
       } else {
@@ -354,9 +326,6 @@ const Room = React.memo(props => {
               : window.location.hostname
           }/ws/chat/${props.currentRoom.sharing_id}`
         )
-        // WebSocketInstance.waitForSocketConnection(() => {
-        //   console.log('looping')
-        // })
         setWebSocket(WebSocketInstance)
         WebSocketInstance.sendSignal('join room', {
           video,
@@ -366,11 +335,6 @@ const Room = React.memo(props => {
         WebSocketInstance.on('request invite', user => {
           let presentInUsers =
             props.currentRoom.all_users.indexOf(user.id) != -1
-          console.log(props.currentRoom.all_users)
-          console.log(user.id == props.currentRoom.created_by.pk)
-          console.log(
-            user.id == props.currentRoom.created_by.pk || presentInUsers
-          )
           if (user.id == props.currentRoom.created_by.pk || presentInUsers) {
             WebSocketInstance.sendSignal('accept invite', user.id)
           } else if (
@@ -403,7 +367,6 @@ const Room = React.memo(props => {
           }
         })
         WebSocketInstance.on('invite was rejected', payload => {
-          console.log(props.myuser.pk == payload.id)
           if (props.myuser.pk == payload.id) {
             // alert('Admin rejected your request')
             toast("Admin rejected your request", { icon : 'ℹ️'})
@@ -412,17 +375,14 @@ const Room = React.memo(props => {
         })
         WebSocketInstance.on('all users', payload => {
           if (pendingRequest == true) {
-            console.log('pending req was true')
             setPendingRequest(false)
             userVideo.current.srcObject = localstream.current
           }
           if (payload.id == props.myuser.pk) {
-            console.log(payload.users)
             const allPeers = []
             payload.users.forEach(user => {
               if (user[0] !== props.myuser.pk) {
                 if (!Boolean(peersRef.current.some(e => e.peerID == user[0]))) {
-                  console.log(localstream.current)
                   const peer = createPeer(
                     user[0],
                     props.myuser.pk,
@@ -444,20 +404,14 @@ const Room = React.memo(props => {
                     show: true,
                     peer
                   })
-                  console.log('created peer ' + user[1])
                 }
               }
             })
             setPeers(allPeers)
-            console.log('peers after all users')
-            console.log(peers)
           }
         })
 
         WebSocketInstance.on('user joined', payload => {
-          // console.log(peersRef.current)
-          // setPeers(peersRef.current)
-          console.log(payload.userID)
           if (payload.userID === props.myuser.pk) {
             if (
               !Boolean(
@@ -470,7 +424,6 @@ const Room = React.memo(props => {
                 localstream.current
               )
               toast(`${payload.caller[1]} joined the room.`, { icon: '👏' })
-              console.log(`${payload.caller[1]} joined the room.`)
               peersRef.current.push({
                 peerID: payload.caller[0],
                 peerName: payload.caller[1],
@@ -491,21 +444,15 @@ const Room = React.memo(props => {
 
               setPeers([...peers, peerObj])
 
-              console.log('added peer')
             }
-            console.log(peers)
           }
-          // setPeers(peersRef.current)
         })
 
         WebSocketInstance.on('receiving returned signal', payload => {
-          console.log('receiving returned signal')
           if (payload.userID === props.myuser.pk) {
             const item = peersRef.current.find(p => p.peerID === payload.id)
             item.peer.signal(payload.signal)
           }
-          // setPeers(peersRef.current)
-          console.log(peers)
         })
 
         WebSocketInstance.on('user left', id => {
@@ -535,7 +482,6 @@ const Room = React.memo(props => {
               icon: '💬'
             })
           }
-          // console.log(allMessages)
           props.addMessage(payload)
         })
 
@@ -575,7 +521,6 @@ const Room = React.memo(props => {
   }, [roomExist, inLobby])
 
   const handleAvatarBtnClick = event => {
-    console.log(event.currentTarget)
     setAnchorAvatarEl(event.currentTarget)
   }
 
@@ -633,12 +578,10 @@ const Room = React.memo(props => {
 
   function shareScreen () {
     setMyVideoTrack(localstream.current.getVideoTracks()[0])
-    console.log(myVideoTrack)
     navigator.mediaDevices
       .getDisplayMedia({ video: { cursor: 'always' }, audio: 'true' })
       .then(screenStream => {
         for (let index = 0; index < peersRef.current.length; index++) {
-          console.log(screenStream.getVideoTracks()[0])
           peersRef.current[index].peer.replaceTrack(
             localstream.current.getVideoTracks()[0],
             screenStream.getVideoTracks()[0],
@@ -690,7 +633,6 @@ const Room = React.memo(props => {
     }
     setPeers([...newPeers])
     peersRef.current = newPeers
-    console.log(peersRef.current)
   }
 
   function toggleChatBoxOpen () {
@@ -740,18 +682,12 @@ const Room = React.memo(props => {
     }
   }
   function handleDisconnect () {
-    console.log(mystream)
     const tracks = mystream && mystream.getTracks()
     tracks.map(track => {
       track.stop()
     })
-    // localstream.current.getTracks()[0].stop();
-    // WebSocketInstance.close()
     history.push(`/room/${currentRoom.id}`)
   }
-  console.log(pendingRequest)
-  console.log(inLobby)
-  console.log(peers)
   return roomExist ? (
     !inLobby && !pendingRequest ? (
       <div className={classes.chatRoom}>
@@ -863,7 +799,6 @@ const Room = React.memo(props => {
             /> */}
 
             {peersRef.current.map(peer => {
-              console.log(peer)
               return (
                 <UserCard
                   key={peer.peerID}
@@ -906,8 +841,8 @@ const Room = React.memo(props => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position='end'>
-                        <IconButton>
-                          <SvgIcon onClick={handleMessageSend}>
+                        <IconButton onClick={handleMessageSend}>
+                          <SvgIcon>
                             <SendIcon />
                           </SvgIcon>
                         </IconButton>
@@ -964,7 +899,6 @@ const Room = React.memo(props => {
                 <Divider />
                 <List>
                   {peersRef.current.map(peer => {
-                    console.log(searchUser)
                     return (
                       <ListItem style={{display: peer.peerName.includes(searchUser) ? '' : 'none'}} key='RemySharp'>
                         <ListItemIcon>
@@ -1063,16 +997,3 @@ const mapDispatchToprops = dispatch => {
   }
 }
 export default withRouter(connect(mapStateToprops, mapDispatchToprops)(Room))
-
-// width={
-//   peers.length == 0 || usersDiv.current.offsetWidth < 1400
-//     ? usersDiv.current.offsetWidth / 1.3
-//     : usersDiv.current.offsetWidth / 2.2
-// }
-// height={
-//   peers.length == 0
-//     ? usersDiv.current.offsetHeight / 1.3
-//     : usersDiv.current.offsetWidth < 1400
-//     ? usersDiv.current.offsetHeight / 2.3
-//     : usersDiv.current.offsetHeight / 1.3
-// }

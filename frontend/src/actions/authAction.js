@@ -4,7 +4,6 @@ import Cookies from 'js-cookie'
 
 import {
   SET_USER_DATA,
-  GET_USER_DATA,
   SET_TOKEN,
   LOGIN_PENDING,
   GET_USER_DATA_PENDING,
@@ -13,7 +12,7 @@ import {
 } from './authActionType'
 
 import { facebook_login, google_login, who_am_i, logout } from '../urls/auth'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 const apiDispatch = (actionType = '', data) => {
   return {
@@ -40,13 +39,9 @@ export const GoogleLoginFtn = data => {
       headers: { 'Content-type': 'application/json; charset=UTF-8' }
     })
       .then(res => {
-        console.log('done')
-        console.log(res)
         dispatch(apiDispatch(SET_TOKEN, res.data.key))
         Cookies.set('token', res.data.key, { expires: 7 })
         dispatch(apiDispatch(LOGIN_PENDING, false))
-        // localStorage.setItem("token", res.data.key);
-        // dispatch(apiDispatch(IS_LOGGED_IN, true))
         dispatch(getUserData())
       })
       .catch(error => {
@@ -57,9 +52,8 @@ export const GoogleLoginFtn = data => {
             'User is already registered with this e-mail address.'
         ) {
           toast.error('User email already registered with Facebook.')
-        }
-        else{
-            toast.error("Error occured while login.")
+        } else {
+          toast.error('Error occured while login.')
         }
         dispatch(apiError(error))
         dispatch(apiDispatch(LOGIN_PENDING, false))
@@ -78,8 +72,6 @@ export const FacebookLoginFtn = data => {
       data: data
     })
       .then(res => {
-        console.log('done')
-        console.log(res)
         dispatch(apiDispatch(SET_TOKEN, res.data.key))
         Cookies.set('token', res.data.key, { expires: 7 })
         dispatch(apiDispatch(LOGIN_PENDING, false))
@@ -95,9 +87,8 @@ export const FacebookLoginFtn = data => {
             'User is already registered with this e-mail address.'
         ) {
           toast.error('User email already registered with Google.')
-        }
-        else{
-            toast.error("Error occured while login.")
+        } else {
+          toast.error('Error occured while login.')
         }
         dispatch(apiError(error))
         dispatch(apiDispatch(LOGIN_PENDING, false))
@@ -107,7 +98,6 @@ export const FacebookLoginFtn = data => {
 }
 
 export const getUserData = () => {
-  console.log('fetch data')
   let url = who_am_i
 
   return dispatch => {
@@ -115,7 +105,6 @@ export const getUserData = () => {
     apiClient
       .get(url)
       .then(res => {
-        console.log(res.data)
         dispatch(apiDispatch(SET_USER_DATA, res.data))
         dispatch(apiDispatch(IS_LOGGED_IN, true))
         dispatch(apiDispatch(GET_USER_DATA_PENDING, false))
@@ -132,14 +121,12 @@ export const getUserData = () => {
 }
 
 export const logoutUser = () => {
-  console.log('fetch data')
   let url = logout
 
   return dispatch => {
     apiClient
       .post(url)
       .then(res => {
-        console.log(res.data)
         dispatch(apiDispatch(IS_LOGGED_IN, false))
         dispatch(apiDispatch(SET_USER_DATA, null))
         dispatch(apiDispatch(SET_TOKEN, ''))

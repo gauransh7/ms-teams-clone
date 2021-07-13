@@ -5,7 +5,6 @@ import { createMuiTheme } from '@material-ui/core/styles'
 import { ThemeProvider } from '@material-ui/styles'
 import ProtectedRoute from './ProtectedRoute'
 import { publicRoutes, protectedRoutes } from './routes'
-import { ContextProvider } from './Context'
 // import { useDispatch, useSelector } from 'react-redux'
 import PublicRoute from './PublicRoute'
 import { getUserData } from './actions/authAction'
@@ -21,17 +20,15 @@ class App extends Component {
   componentDidMount () {
     this.props.getUser()
   }
-  // componentDidUpdate (prevProps) {
-  //   if (prevProps.isLoggedIn != this.props.isLoggedIn) {
-  //     this.props.getUser()
-  //   }
-  // }
+
+  shouldComponentUpdate (prevProps) {
+    return prevProps!== this.props
+  }
   render () {
-    // const { isLoginPending } = this.props
+    const { currentTheme } = this.props
     return (
-      <ThemeProvider theme={theme(this.props.currentTheme)}>
-      <Toaster />
-      {/* <ContextProvider> */}
+      <ThemeProvider theme={theme(currentTheme)}>
+        <Toaster />
         <Router>
           <Switch>
             {publicRoutes.map((route, index) => (
@@ -55,7 +52,6 @@ class App extends Component {
             ))}
           </Switch>
         </Router>
-        {/* </ContextProvider> */}
       </ThemeProvider>
     )
   }

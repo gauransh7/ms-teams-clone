@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
 
 const ChatRoomCard = props => {
   const history = useHistory()
-  console.log(props)
   const classes = useStyles()
   const [showAddUserModal, setShowAddUserModal] = useState(false)
 
@@ -54,7 +53,6 @@ const ChatRoomCard = props => {
     <div className={classes.roomCardMainDiv}>
       <Card
         className={classes.Card}
-        clickable
         onClick={() => history.push(`/room/${props.room.id}`)}
       >
         <CardActions>
@@ -66,12 +64,12 @@ const ChatRoomCard = props => {
           )}
           <div style={{ marginInlineStart: 'auto' }}>
             {!props.invite && (
-              <IconButton>
-                <PersonAddIcon className={classes.icons} onClick={handleAddUser} />
+              <IconButton onClick={handleAddUser}>
+                <PersonAddIcon className={classes.icons} />
               </IconButton>
             )}
-            <IconButton>
-              <LaunchIcon className={classes.icons} onClick={openRoom} />
+            <IconButton onClick={openRoom}>
+              <LaunchIcon className={classes.icons} />
             </IconButton>
           </div>
         </CardActions>

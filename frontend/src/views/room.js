@@ -1,9 +1,8 @@
-import { Button, Card, Grid, Link, Paper } from '@material-ui/core'
+import { Button, Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import React, { Component, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Redirect, useHistory } from 'react-router'
 import { logoutUser } from '../actions/authAction'
 import { getRoomDetails } from '../actions/chatRoomAction'
 import RoomChat from '../components/rooms/roomChat'
@@ -20,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     [theme.breakpoints.down('md')]: {
       gridAutoFlow: 'row',
-      gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
+      gridTemplateColumns: 'repeat(1, minmax(0, 1fr))'
     }
   },
   roomDetailsButton: {
@@ -41,8 +40,6 @@ const useStyles = makeStyles(theme => ({
 const Room = props => {
   const [showRoomDetailModal, setShowRoomDetailModal] = useState(false)
   useEffect(() => {
-    console.log('render')
-    console.log(props)
     props.getRoomDetails(props.match.params.id)
   }, [])
   const classes = useStyles()
@@ -52,7 +49,6 @@ const Room = props => {
         variant='contained'
         color='secondary'
         className={classes.roomDetailsButton}
-        // startIcon={<PersonAddIcon />}
         onClick={() => setShowRoomDetailModal(true)}
       >
         View Details
@@ -66,7 +62,7 @@ const Room = props => {
       )}
       <div className={classes.roomDetailsDiv}>
         <RoomData meeting={true} />
-        </div>
+      </div>
       <RoomChat />
     </Grid>
   )

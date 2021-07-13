@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { Link, useHistory, withRouter } from 'react-router-dom'
+import { useHistory, withRouter } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -12,11 +12,6 @@ import { logoutUser } from '../../actions/authAction'
 import { Avatar, MenuItem } from '@material-ui/core'
 import { changeTheme } from '../../actions/themeAction'
 import { getInitials } from '../../helpers/helperFunctions'
-import light from '../../assets/logo/default.png'
-import dark from '../../assets/logo/dark.png'
-import solarizedDark from '../../assets/logo/solarizedDark.png'
-import solarizedLight from '../../assets/logo/solarizedLight.png'
-import dracula from '../../assets/logo/dracula.png'
 
 const useStyles = makeStyles(theme => ({
   AppBar: {
@@ -24,8 +19,8 @@ const useStyles = makeStyles(theme => ({
   },
   hideMobile: {
     [theme.breakpoints.down('xs')]: {
-      display: 'none',
-    },
+      display: 'none'
+    }
   },
   title: {
     flexGrow: 1
@@ -38,17 +33,14 @@ const useStyles = makeStyles(theme => ({
 const NavBar = props => {
   const classes = useStyles()
   const history = useHistory()
-  console.log(props.currentTheme)
   const [anchorThemeEl, setAnchorThemeEl] = useState(null)
   const [anchorAvatarEl, setAnchorAvatarEl] = useState(null)
 
   const handleAvatarBtnClick = event => {
-    console.log(event.currentTarget)
     setAnchorAvatarEl(event.currentTarget)
   }
 
   const handleAvatarBtnClose = () => {
-    console.log('close')
     setAnchorAvatarEl(null)
   }
 
@@ -64,13 +56,18 @@ const NavBar = props => {
     <AppBar position='static'>
       <Toolbar>
         <Typography variant='h6' className={classes.title}>
-          <img onClick={() => history.push('/login?next=')} style={{'cursor': 'pointer'}} src={`${window.location.origin}/${props.currentTheme}.png`} />
+          <img
+            onClick={() => history.push('/login?next=')}
+            style={{ cursor: 'pointer' }}
+            src={`${window.location.origin}/${props.currentTheme}.png`}
+          />
         </Typography>
         <Button
           aria-controls='simple-theme-menu'
           content='themes'
           aria-haspopup='true'
           color='inherit'
+          style={{ display: props.match.params.code ? 'none' : '' }}
           className='header-title-button'
           onClick={handleThemeBtnClick}
           startIcon={<Brightness4RoundedIcon />}
@@ -160,17 +157,17 @@ const NavBar = props => {
                 </Avatar>
               }
             >
-              <span className={classes.hideMobile}>{props.user.first_name}</span>
+              <span className={classes.hideMobile}>
+                {props.user.first_name}
+              </span>
             </Button>
             <Menu
               id='avatar-dropdown'
               anchorEl={anchorAvatarEl}
-              // keepMounted
               open={Boolean(anchorAvatarEl)}
               onClose={handleAvatarBtnClose}
               style={{ marginTop: '30px' }}
               onClick={() => props.logout}
-              // style={{ marginTop: '30px' }}
             >
               <MenuItem onClick={props.logout}>Logout</MenuItem>
             </Menu>
@@ -190,7 +187,6 @@ const mapStateToprops = state => {
     darkTheme:
       state.theme.theme == 'dark' ||
       state.theme.theme == 'solarizedDark' ||
-      state.theme.theme == 'palpatine' ||
       state.theme.theme == 'dracula'
   }
 }
@@ -201,10 +197,8 @@ const mapDispatchToprops = dispatch => {
       return dispatch(logoutUser())
     },
     changeTheme: newTheme => {
-      console.log('hrere')
       return dispatch(changeTheme(newTheme))
     }
-    // toggleDrawer: val => dispatch(themeActions.toggleDrawer(val))
   }
 }
 

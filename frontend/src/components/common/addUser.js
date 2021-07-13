@@ -75,8 +75,8 @@ const AddUserModal = props => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
-                    <IconButton>
-                      <SvgIcon onClick={handleEmailSend}>
+                    <IconButton  onClick={handleEmailSend}>
+                      <SvgIcon>
                         <SendIcon />
                       </SvgIcon>
                     </IconButton>

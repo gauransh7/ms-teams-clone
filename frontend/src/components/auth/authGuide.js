@@ -1,11 +1,9 @@
-import React, {Component} from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { useHistory, withRouter } from 'react-router-dom'
-import { Button, Grid, Paper, TextField } from '@material-ui/core'
+import { withRouter } from 'react-router-dom'
 import { createChatRoom } from '../../actions/chatRoomAction'
 
 const AuthGuide = (props) => {
-  const history = useHistory()
     return (
       <div>
           Auth Guide

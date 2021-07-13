@@ -15,7 +15,6 @@ const initialPendingState = {
 
 const initialState = {
   ...initialPendingState,
-  // _id: null,
   user: {},
   token: '',
   isLoggedIn: false,

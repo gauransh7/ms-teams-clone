@@ -1,13 +1,9 @@
-import { Button, Card, Grid, Link, Paper } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
-import { Redirect, useHistory } from 'react-router'
 import { logoutUser } from '../actions/authAction'
-import AuthGuide from '../components/auth/authGuide'
 import AuthProvider from '../components/auth/authProvider'
-import FacebookSocialAuth from '../components/auth/facebook'
-import GoogleSocialAuth from '../components/auth/google'
 import Loader from '../components/common/loader'
 
 const useStyles = makeStyles(theme => ({
@@ -27,7 +23,6 @@ const LoginView = props => {
   ) : (
     <Grid className={classes.Login}>
       <AuthProvider />
-      {/* <AuthGuide /> */}
     </Grid>
   )
 }

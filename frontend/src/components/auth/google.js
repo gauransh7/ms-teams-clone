@@ -3,18 +3,10 @@ import { connect } from 'react-redux'
 import GoogleLogin from 'react-google-login'
 import { GoogleLoginFtn } from '../../actions/authAction'
 import './css/authProvider.css'
-// import googleLogin from '../../auth/googlelogin';
-// import { useDispatch } from 'react-redux';
 
 class GoogleSocialAuth extends Component {
   render () {
-    // const googleResponse = (response) => {
-    //   console.log(response);
-    //   googleLogin(response['accessToken'], response['googleId']);
-    // }
     const googleResponse = response => {
-      console.log('success')
-      console.log(response)
       let data = {
         access_token: response['accessToken'],
         code: response['googleId']
